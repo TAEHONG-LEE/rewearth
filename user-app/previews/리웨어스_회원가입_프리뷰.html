@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>리웨어스 회원가입 프리뷰</title>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <style>
+    :root {
+      --black: #000000;
+      --white: #FFFFFF;
+      --burgundy: #800020;
+      --burgundy-light: #9A2540;
+      --gray-100: #F5F5F5;
+      --gray-200: #E5E5E5;
+      --gray-300: #CCCCCC;
+      --gray-500: #999999;
+      --gray-600: #666666;
+      --success: #388E3C;
+      --error: #D32F2F;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0d0d0d 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .header h1 {
+      color: var(--white);
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .header p {
+      color: var(--gray-500);
+      font-size: 14px;
+    }
+
+    .section {
+      margin-bottom: 60px;
+    }
+
+    .section-title {
+      color: var(--burgundy);
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      margin-bottom: 16px;
+      padding-left: 20px;
+    }
+
+    .screens-row {
+      display: flex;
+      gap: 24px;
+      overflow-x: auto;
+      padding: 20px;
+      scroll-behavior: smooth;
+    }
+
+    .screens-row::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    .screens-row::-webkit-scrollbar-track {
+      background: #333;
+      border-radius: 4px;
+    }
+
+    .screens-row::-webkit-scrollbar-thumb {
+      background: var(--burgundy);
+      border-radius: 4px;
+    }
+
+    .screen-wrapper {
+      flex-shrink: 0;
+    }
+
+    .screen-label {
+      color: var(--gray-500);
+      font-size: 12px;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .phone-frame {
+      width: 280px;
+      height: 606px;
+      background: var(--white);
+      border-radius: 32px;
+      overflow: hidden;
+      box-shadow: 0 25px 80px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.1);
+      position: relative;
+    }
+
+    .phone-frame.scrollable {
+      overflow-y: auto;
+    }
+
+    .phone-frame.scrollable::-webkit-scrollbar {
+      width: 0;
+    }
+
+    .status-bar {
+      height: 35px;
+      padding: 8px 18px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      font-weight: 600;
+      background: var(--white);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .status-bar.light {
+      color: var(--black);
+    }
+
+    .detail-header {
+      padding: 6px 15px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--white);
+      position: sticky;
+      top: 35px;
+      z-index: 10;
+    }
+
+    .detail-header-title {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .auth-content {
+      padding: 20px 15px 100px;
+    }
+
+    .auth-logo {
+      font-size: 38px;
+      margin-bottom: 18px;
+    }
+
+    .auth-title {
+      font-size: 19px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      line-height: 1.4;
+    }
+
+    .auth-desc {
+      font-size: 11px;
+      color: var(--gray-600);
+      margin-bottom: 24px;
+    }
+
+    .step-indicator {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .step-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--gray-300);
+    }
+
+    .step-dot.active {
+      width: 24px;
+      border-radius: 4px;
+      background: var(--burgundy);
+    }
+
+    .step-dot.completed {
+      background: var(--black);
+    }
+
+    .input-group {
+      margin-bottom: 18px;
+    }
+
+    .input-label {
+      font-size: 11px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .input-label .required {
+      color: var(--burgundy);
+    }
+
+    .input-label .optional {
+      color: var(--gray-500);
+      font-weight: 400;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      border: 2px solid var(--gray-200);
+      border-radius: 10px;
+      background: var(--white);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .input-field:focus {
+      border-color: var(--black);
+    }
+
+    .input-field.error {
+      border-color: var(--error);
+    }
+
+    .input-field.success {
+      border-color: var(--success);
+    }
+
+    .input-with-btn {
+      display: flex;
+      gap: 8px;
+    }
+
+    .input-with-btn .input-field {
+      flex: 1;
+    }
+
+    .check-btn {
+      padding: 12px 14px;
+      background: var(--black);
+      color: var(--white);
+      border: none;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .check-btn.disabled {
+      background: var(--gray-300);
+    }
+
+    .input-helper {
+      font-size: 10px;
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .input-helper.error {
+      color: var(--error);
+    }
+
+    .input-helper.success {
+      color: var(--success);
+    }
+
+    .gender-options {
+      display: flex;
+      gap: 8px;
+    }
+
+    .gender-option {
+      flex: 1;
+      padding: 12px;
+      border: 2px solid var(--gray-200);
+      border-radius: 10px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .gender-option.selected {
+      background: var(--black);
+      border-color: var(--black);
+      color: var(--white);
+    }
+
+    .date-inputs {
+      display: flex;
+      gap: 8px;
+    }
+
+    .date-input {
+      flex: 1;
+      padding: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      border: 2px solid var(--gray-200);
+      border-radius: 10px;
+      text-align: center;
+      background: var(--white);
+    }
+
+    .date-input::placeholder {
+      color: var(--gray-500);
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px;
+      background: var(--gray-100);
+      border-radius: 10px;
+    }
+
+    .checkbox {
+      width: 22px;
+      height: 22px;
+      border: 2px solid var(--gray-300);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .checkbox.checked {
+      background: var(--burgundy);
+      border-color: var(--burgundy);
+    }
+
+    .checkbox svg {
+      display: none;
+    }
+
+    .checkbox.checked svg {
+      display: block;
+    }
+
+    .checkbox-label {
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .checkbox-desc {
+      font-size: 10px;
+      color: var(--gray-600);
+      margin-top: 2px;
+    }
+
+    .size-chips {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .size-chip {
+      padding: 10px 16px;
+      border-radius: 20px;
+      border: 2px solid var(--gray-200);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .size-chip.selected {
+      background: var(--black);
+      border-color: var(--black);
+      color: var(--white);
+    }
+
+    .body-input-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .body-input-group {
+      flex: 1;
+    }
+
+    .body-input {
+      width: 100%;
+      padding: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      border: 2px solid var(--gray-200);
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .body-input-unit {
+      font-size: 10px;
+      color: var(--gray-500);
+      text-align: center;
+      margin-top: 4px;
+    }
+
+    .cta-bottom {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 10px 15px 26px;
+      background: var(--white);
+      border-top: 1px solid var(--gray-200);
+    }
+
+    .cta-btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--burgundy);
+      color: var(--white);
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .cta-btn.disabled {
+      background: var(--gray-300);
+    }
+
+    .cta-btn.secondary {
+      background: var(--black);
+    }
+
+    .skip-btn {
+      width: 100%;
+      padding: 12px;
+      background: none;
+      border: none;
+      color: var(--gray-600);
+      font-size: 12px;
+      margin-top: 8px;
+    }
+
+    .progress-bar {
+      height: 3px;
+      background: var(--gray-200);
+      margin-bottom: 20px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--burgundy);
+      transition: width 0.3s;
+    }
+
+    .welcome-content {
+      padding: 60px 20px;
+      text-align: center;
+    }
+
+    .welcome-icon {
+      width: 100px;
+      height: 100px;
+      background: linear-gradient(135deg, var(--burgundy) 0%, var(--burgundy-light) 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      font-size: 48px;
+    }
+
+    .welcome-title {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .welcome-subtitle {
+      font-size: 13px;
+      color: var(--gray-600);
+      margin-bottom: 40px;
+      line-height: 1.5;
+    }
+
+    .user-info-card {
+      background: var(--gray-100);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 24px;
+      text-align: left;
+    }
+
+    .user-info-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      font-size: 13px;
+    }
+
+    .user-info-row:not(:last-child) {
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    .user-info-label {
+      color: var(--gray-600);
+    }
+
+    .user-info-value {
+      font-weight: 600;
+    }
+
+    footer {
+      text-align: center;
+      padding: 40px;
+      color: var(--gray-500);
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🎩 리웨어스</h1>
+    <p>회원가입 플로우 UI 프리뷰 • 블랙/화이트 + 버건디</p>
+  </div>
+
+  <!-- 회원가입 플로우 -->
+  <div class="section">
+    <div class="section-title">회원가입 플로우</div>
+    <div class="screens-row">
+      
+      <!-- Step 1: 닉네임 입력 -->
+      <div class="screen-wrapper">
+        <div class="screen-label">Step 1: 닉네임</div>
+        <div class="phone-frame">
+          <div class="status-bar light">
+            <span>9:41</span>
+            <span>●●●●● ⚡ 100%</span>
+          </div>
+          <div class="detail-header">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+            <span class="detail-header-title">회원가입</span>
+            <span style="width:20px"></span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 25%"></div>
+          </div>
+          <div class="auth-content">
+            <div class="step-indicator">
+              <div class="step-dot active"></div>
+              <div class="step-dot"></div>
+              <div class="step-dot"></div>
+              <div class="step-dot"></div>
+            </div>
+            <div class="auth-logo">🎩</div>
+            <div class="auth-title">닉네임을 입력해주세요</div>
+            <div class="auth-desc">리웨어스에서 사용할 이름이에요</div>
+            
+            <div class="input-group">
+              <label class="input-label">닉네임 <span class="required">*</span></label>
+              <div class="input-with-btn">
+                <input type="text" class="input-field" placeholder="2~10자 한글/영문" value="패션러버">
+                <button class="check-btn">중복확인</button>
+              </div>
+              <div class="input-helper success">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <polyline points="20,6 9,17 4,12"></polyline>
+                </svg>
+                사용 가능한 닉네임이에요
+              </div>
+            </div>
+          </div>
+          <div class="cta-bottom">
+            <button class="cta-btn">다음</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 1: 닉네임 - 중복 에러 -->
+      <div class="screen-wrapper">
+        <div class="screen-label">닉네임 중복 에러</div>
+        <div class="phone-frame">
+          <div class="status-bar light">
+            <span>9:41</span>
+            <span>●●●●● ⚡ 100%</span>
+          </div>
+          <div class="detail-header">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+            <span class="detail-header-title">회원가입</span>
+            <span style="width:20px"></span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 25%"></div>
+          </div>
+          <div class="auth-content">
+            <div class="step-indicator">
+              <div class="step-dot active"></div>
+              <div class="step-dot"></div>
+              <div class="step-dot"></div>
+              <div class="step-dot"></div>
+            </div>
+            <div class="auth-logo">🎩</div>
+            <div class="auth-title">닉네임을 입력해주세요</div>
+            <div class="auth-desc">리웨어스에서 사용할 이름이에요</div>
+            
+            <div class="input-group">
+              <label class="input-label">닉네임 <span class="required">*</span></label>
+              <div class="input-with-btn">
+                <input type="text" class="input-field error" placeholder="2~10자 한글/영문" value="리웨어스">
+                <button class="check-btn">중복확인</button>
+              </div>
+              <div class="input-helper error">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="15" y1="9" x2="9" y2="15"></line>
+                  <line x1="9" y1="9" x2="15" y2="15"></line>
+                </svg>
+                이미 사용 중인 닉네임이에요
+              </div>
+            </div>
+          </div>
+          <div class="cta-bottom">
+            <button class="cta-btn disabled">다음</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: 기본 정보 -->
+      <div class="screen-wrapper">
+        <div class="screen-label">Step 2: 기본 정보</div>
+        <div class="phone-frame scrollable">
+          <div class="status-bar light">
+            <span>9:41</span>
+            <span>●●●●● ⚡ 100%</span>
+          </div>
+          <div class="detail-header">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12,19 5,12 12,5"></polyline>
+            </svg>
+            <span class="detail-header-title">회원가입</span>
+            <span style="width:20px"></span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 50%"></div>
+          </div>
+          <div class="auth-content">
+            <div class="step-indicator">
+              <div class="step-dot completed"></div>
+              <div class="step-dot active"></div>
+              <div class="step-dot"></div>
+              <div class="step-dot"></div>
+            </div>
+            <div class="auth-title">기본 정보를 입력해주세요</div>
+            <div class="auth-desc">맞춤 서비스를 위해 필요해요</div>
+            
+            <div class="input-group">
+              <label class="input-label">성별 <span class="required">*</span></label>
+              <div class="gender-options">
+                <div class="gender-option">남성</div>
+                <div class="gender-option selected">여성</div>
+                <div class="gender-option">기타</div>
+              </div>
+            </div>
+
+            <div class="input-group">
+              <label class="input-label">생년월일 <span class="required">*</span></label>
+              <div class="date-inputs">
+                <input type="text" class="date-input" placeholder="YYYY" value="1995" maxlength="4">
+                <input type="text" class="date-input" placeholder="MM" value="03" maxlength="2">
+                <input type="text" class="date-input" placeholder="DD" value="15" maxlength="2">
+              </div>
+            </div>
+
+            <div class="input-group">
+              <label class="input-label">군인 여부</label>
+              <div class="checkbox-group">
+                <div class="checkbox checked">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
+                    <polyline points="20,6 9,17 4,12"></polyline>
+                  </svg>
+                </div>
+                <div>
+                  <div class="checkbox-label">현역 군인입니다</div>
+                  <div class="checkbox-desc">군인 전용 혜택을 받을 수 있어요</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="cta-bottom">
+            <button class="cta-btn">다음</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: 체형 정보 (선택) -->
+      <div class="screen-wrapper">
+        <div class="screen-label">Step 3: 체형 정보 (선택)</div>
+        <div class="phone-frame scrollable">
+          <div class="status-bar light">
+            <span>9:41</span>
+            <span>●●●●● ⚡ 100%</span>
+          </div>
+          <div class="detail-header">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12,19 5,12 12,5"></polyline>
+            </svg>
+            <span class="detail-header-title">회원가입</span>
+            <span style="width:20px"></span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 75%"></div>
+          </div>
+          <div class="auth-content">
+            <div class="step-indicator">
+              <div class="step-dot completed"></div>
+              <div class="step-dot completed"></div>
+              <div class="step-dot active"></div>
+              <div class="step-dot"></div>
+            </div>
+            <div class="auth-title">체형 정보를 알려주세요</div>
+            <div class="auth-desc">더 정확한 사이즈 추천을 위해 사용돼요 <span style="color: var(--burgundy);">(선택)</span></div>
+            
+            <div class="input-group">
+              <label class="input-label">키 / 몸무게 <span class="optional">(선택)</span></label>
+              <div class="body-input-row">
+                <div class="body-input-group">
+                  <input type="text" class="body-input" placeholder="170" value="168">
+                  <div class="body-input-unit">cm</div>
+                </div>
+                <div class="body-input-group">
+                  <input type="text" class="body-input" placeholder="60" value="55">
+                  <div class="body-input-unit">kg</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="input-group">
+              <label class="input-label">상의 사이즈 <span class="optional">(선택)</span></label>
+              <div class="size-chips">
+                <span class="size-chip">XS</span>
+                <span class="size-chip">S</span>
+                <span class="size-chip selected">M</span>
+                <span class="size-chip">L</span>
+                <span class="size-chip">XL</span>
+                <span class="size-chip">XXL</span>
+              </div>
+            </div>
+
+            <div class="input-group">
+              <label class="input-label">하의 사이즈 <span class="optional">(선택)</span></label>
+              <div class="size-chips">
+                <span class="size-chip">XS</span>
+                <span class="size-chip selected">S</span>
+                <span class="size-chip">M</span>
+                <span class="size-chip">L</span>
+                <span class="size-chip">XL</span>
+                <span class="size-chip">XXL</span>
+              </div>
+            </div>
+          </div>
+          <div class="cta-bottom">
+            <button class="cta-btn">다음</button>
+            <button class="skip-btn">나중에 입력할게요</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4: 가입 완료 -->
+      <div class="screen-wrapper">
+        <div class="screen-label">Step 4: 가입 완료</div>
+        <div class="phone-frame">
+          <div class="status-bar light">
+            <span>9:41</span>
+            <span>●●●●● ⚡ 100%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 100%"></div>
+          </div>
+          <div class="welcome-content">
+            <div class="welcome-icon">🎉</div>
+            <div class="welcome-title">환영합니다, 패션러버님!</div>
+            <div class="welcome-subtitle">리웨어스 회원가입이 완료되었어요<br>이제 특별한 의류를 대여해보세요</div>
+            
+            <div class="user-info-card">
+              <div class="user-info-row">
+                <span class="user-info-label">닉네임</span>
+                <span class="user-info-value">패션러버</span>
+              </div>
+              <div class="user-info-row">
+                <span class="user-info-label">성별</span>
+                <span class="user-info-value">여성</span>
+              </div>
+              <div class="user-info-row">
+                <span class="user-info-label">생년월일</span>
+                <span class="user-info-value">1995.03.15</span>
+              </div>
+              <div class="user-info-row">
+                <span class="user-info-label">군인 여부</span>
+                <span class="user-info-value" style="color: var(--burgundy);">현역 군인</span>
+              </div>
+              <div class="user-info-row">
+                <span class="user-info-label">사이즈</span>
+                <span class="user-info-value">상의 M / 하의 S</span>
+              </div>
+            </div>
+
+            <button class="cta-btn secondary" style="margin-bottom: 10px;">홈으로 이동</button>
+            <button class="cta-btn" style="background: var(--burgundy);">상품 둘러보기</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 추가 상태 화면 -->
+  <div class="section">
+    <div class="section-title">추가 상태 화면</div>
+    <div class="screens-row">
+      
+      <!-- 체형 정보 미입력 -->
+      <div class="screen-wrapper">
+        <div class="screen-label">체형 정보 스킵</div>
+        <div class="phone-frame scrollable">
+          <div class="status-bar light">
+            <span>9:41</span>
+            <span>●●●●● ⚡ 100%</span>
+          </div>
+          <div class="detail-header">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12,19 5,12 12,5"></polyline>
+            </svg>
+            <span class="detail-header-title">회원가입</span>
+            <span style="width:20px"></span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 75%"></div>
+          </div>
+          <div class="auth-content">
+            <div class="step-indicator">
+              <div class="step-dot completed"></div>
+              <div class="step-dot completed"></div>
+              <div class="step-dot active"></div>
+              <div class="step-dot"></div>
+            </div>
+            <div class="auth-title">체형 정보를 알려주세요</div>
+            <div class="auth-desc">더 정확한 사이즈 추천을 위해 사용돼요 <span style="color: var(--burgundy);">(선택)</span></div>
+            
+            <div class="input-group">
+              <label class="input-label">키 / 몸무게 <span class="optional">(선택)</span></label>
+              <div class="body-input-row">
+                <div class="body-input-group">
+                  <input type="text" class="body-input" placeholder="170">
+                  <div class="body-input-unit">cm</div>
+                </div>
+                <div class="body-input-group">
+                  <input type="text" class="body-input" placeholder="60">
+                  <div class="body-input-unit">kg</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="input-group">
+              <label class="input-label">상의 사이즈 <span class="optional">(선택)</span></label>
+              <div class="size-chips">
+                <span class="size-chip">XS</span>
+                <span class="size-chip">S</span>
+                <span class="size-chip">M</span>
+                <span class="size-chip">L</span>
+                <span class="size-chip">XL</span>
+                <span class="size-chip">XXL</span>
+              </div>
+            </div>
+
+            <div class="input-group">
+              <label class="input-label">하의 사이즈 <span class="optional">(선택)</span></label>
+              <div class="size-chips">
+                <span class="size-chip">XS</span>
+                <span class="size-chip">S</span>
+                <span class="size-chip">M</span>
+                <span class="size-chip">L</span>
+                <span class="size-chip">XL</span>
+                <span class="size-chip">XXL</span>
+              </div>
+            </div>
+          </div>
+          <div class="cta-bottom">
+            <button class="cta-btn disabled">다음</button>
+            <button class="skip-btn">나중에 입력할게요</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 군인 미체크 상태 -->
+      <div class="screen-wrapper">
+        <div class="screen-label">군인 미체크 상태</div>
+        <div class="phone-frame scrollable">
+          <div class="status-bar light">
+            <span>9:41</span>
+            <span>●●●●● ⚡ 100%</span>
+          </div>
+          <div class="detail-header">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12,19 5,12 12,5"></polyline>
+            </svg>
+            <span class="detail-header-title">회원가입</span>
+            <span style="width:20px"></span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 50%"></div>
+          </div>
+          <div class="auth-content">
+            <div class="step-indicator">
+              <div class="step-dot completed"></div>
+              <div class="step-dot active"></div>
+              <div class="step-dot"></div>
+              <div class="step-dot"></div>
+            </div>
+            <div class="auth-title">기본 정보를 입력해주세요</div>
+            <div class="auth-desc">맞춤 서비스를 위해 필요해요</div>
+            
+            <div class="input-group">
+              <label class="input-label">성별 <span class="required">*</span></label>
+              <div class="gender-options">
+                <div class="gender-option selected">남성</div>
+                <div class="gender-option">여성</div>
+                <div class="gender-option">기타</div>
+              </div>
+            </div>
+
+            <div class="input-group">
+              <label class="input-label">생년월일 <span class="required">*</span></label>
+              <div class="date-inputs">
+                <input type="text" class="date-input" placeholder="YYYY" value="1998" maxlength="4">
+                <input type="text" class="date-input" placeholder="MM" value="07" maxlength="2">
+                <input type="text" class="date-input" placeholder="DD" value="22" maxlength="2">
+              </div>
+            </div>
+
+            <div class="input-group">
+              <label class="input-label">군인 여부</label>
+              <div class="checkbox-group">
+                <div class="checkbox">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
+                    <polyline points="20,6 9,17 4,12"></polyline>
+                  </svg>
+                </div>
+                <div>
+                  <div class="checkbox-label">현역 군인입니다</div>
+                  <div class="checkbox-desc">군인 전용 혜택을 받을 수 있어요</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="cta-bottom">
+            <button class="cta-btn">다음</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 가입 완료 (최소 정보) -->
+      <div class="screen-wrapper">
+        <div class="screen-label">가입 완료 (최소 정보)</div>
+        <div class="phone-frame">
+          <div class="status-bar light">
+            <span>9:41</span>
+            <span>●●●●● ⚡ 100%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 100%"></div>
+          </div>
+          <div class="welcome-content">
+            <div class="welcome-icon">🎉</div>
+            <div class="welcome-title">환영합니다, 멋쟁이님!</div>
+            <div class="welcome-subtitle">리웨어스 회원가입이 완료되었어요<br>이제 특별한 의류를 대여해보세요</div>
+            
+            <div class="user-info-card">
+              <div class="user-info-row">
+                <span class="user-info-label">닉네임</span>
+                <span class="user-info-value">멋쟁이</span>
+              </div>
+              <div class="user-info-row">
+                <span class="user-info-label">성별</span>
+                <span class="user-info-value">남성</span>
+              </div>
+              <div class="user-info-row">
+                <span class="user-info-label">생년월일</span>
+                <span class="user-info-value">1998.07.22</span>
+              </div>
+              <div class="user-info-row">
+                <span class="user-info-label">체형 정보</span>
+                <span class="user-info-value" style="color: var(--gray-500);">미입력</span>
+              </div>
+            </div>
+
+            <button class="cta-btn secondary" style="margin-bottom: 10px;">홈으로 이동</button>
+            <button class="cta-btn" style="background: var(--burgundy);">상품 둘러보기</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>
+    <p>리웨어스 회원가입 UI 프리뷰 • 2025.12.01</p>
+    <p style="margin-top: 8px;">블랙/화이트 기반 + 버건디(#800020) 포인트 컬러</p>
+  </footer>
+</body>
+</html>

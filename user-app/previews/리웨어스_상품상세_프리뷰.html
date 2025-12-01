@@ -1,0 +1,2016 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>리웨어스 상품 상세 프리뷰</title>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <style>
+    :root {
+      --black: #000000;
+      --white: #FFFFFF;
+      --burgundy: #800020;
+      --burgundy-light: #9A2540;
+      --gray-100: #F5F5F5;
+      --gray-200: #E5E5E5;
+      --gray-300: #CCCCCC;
+      --gray-500: #999999;
+      --gray-600: #666666;
+      --success: #388E3C;
+      --error: #D32F2F;
+      --warning: #FF9800;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0d0d0d 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .header h1 {
+      color: var(--white);
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .header p {
+      color: var(--gray-500);
+      font-size: 14px;
+    }
+
+    .section {
+      margin-bottom: 60px;
+    }
+
+    .section-title {
+      color: var(--burgundy);
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      margin-bottom: 16px;
+      padding-left: 20px;
+    }
+
+    .screens-row {
+      display: flex;
+      gap: 24px;
+      overflow-x: auto;
+      padding: 20px;
+      scroll-behavior: smooth;
+    }
+
+    .screens-row::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    .screens-row::-webkit-scrollbar-track {
+      background: #333;
+      border-radius: 4px;
+    }
+
+    .screens-row::-webkit-scrollbar-thumb {
+      background: var(--burgundy);
+      border-radius: 4px;
+    }
+
+    .screen-wrapper {
+      flex-shrink: 0;
+    }
+
+    .screen-label {
+      color: var(--gray-500);
+      font-size: 12px;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .phone-frame {
+      width: 280px;
+      height: 606px;
+      background: var(--white);
+      border-radius: 32px;
+      overflow: hidden;
+      box-shadow: 0 25px 80px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.1);
+      position: relative;
+    }
+
+    .phone-frame.scrollable {
+      overflow-y: auto;
+    }
+
+    .phone-frame.scrollable::-webkit-scrollbar {
+      width: 0;
+    }
+
+    .status-bar {
+      height: 35px;
+      padding: 8px 18px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      font-weight: 600;
+      background: var(--white);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .status-bar.light {
+      color: var(--black);
+    }
+
+    /* Product Detail Header */
+    .detail-header {
+      padding: 6px 15px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--white);
+      position: sticky;
+      top: 35px;
+      z-index: 99;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .icon-btn {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .cart-badge {
+      position: relative;
+    }
+
+    .cart-badge::after {
+      content: '2';
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      width: 14px;
+      height: 14px;
+      background: var(--burgundy);
+      color: var(--white);
+      font-size: 8px;
+      font-weight: 700;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Product Image */
+    .product-image-container {
+      width: 100%;
+      height: 280px;
+      background: var(--gray-100);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 100px;
+    }
+
+    .image-indicators {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+    }
+
+    .indicator {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.5);
+    }
+
+    .indicator.active {
+      width: 18px;
+      border-radius: 3px;
+      background: var(--white);
+    }
+
+    .action-buttons {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .action-btn {
+      width: 36px;
+      height: 36px;
+      background: rgba(255,255,255,0.95);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    .action-btn.liked svg {
+      fill: var(--burgundy);
+      stroke: var(--burgundy);
+    }
+
+    /* Product Info */
+    .product-info {
+      padding: 16px 15px;
+    }
+
+    .status-badge {
+      display: inline-block;
+      background: rgba(56, 142, 60, 0.1);
+      color: var(--success);
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .product-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      line-height: 1.3;
+    }
+
+    .product-desc {
+      font-size: 12px;
+      color: var(--gray-600);
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    /* Info Box */
+    .info-box {
+      background: var(--gray-100);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 16px;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+    }
+
+    .info-row:not(:last-child) {
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    .info-label {
+      font-size: 12px;
+      color: var(--gray-600);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .info-value {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .info-value.price {
+      color: var(--burgundy);
+      font-size: 16px;
+    }
+
+    .size-chips {
+      display: flex;
+      gap: 6px;
+    }
+
+    .size-chip {
+      padding: 4px 10px;
+      border-radius: 4px;
+      background: var(--white);
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .size-chip.available {
+      border: 1px solid var(--black);
+    }
+
+    .size-chip.unavailable {
+      color: var(--gray-500);
+      text-decoration: line-through;
+    }
+
+    .location-link {
+      color: var(--burgundy);
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Tab Navigation */
+    .tab-nav {
+      display: flex;
+      border-bottom: 1px solid var(--gray-200);
+      position: sticky;
+      top: 75px;
+      background: var(--white);
+      z-index: 98;
+    }
+
+    .tab-item {
+      flex: 1;
+      padding: 12px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--gray-500);
+      cursor: pointer;
+      position: relative;
+    }
+
+    .tab-item.active {
+      color: var(--black);
+      font-weight: 600;
+    }
+
+    .tab-item.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--black);
+    }
+
+    .tab-badge {
+      display: inline-block;
+      background: var(--burgundy);
+      color: var(--white);
+      font-size: 9px;
+      padding: 2px 5px;
+      border-radius: 8px;
+      margin-left: 4px;
+    }
+
+    /* Tab Content */
+    .tab-content {
+      padding: 16px 15px;
+    }
+
+    .content-section {
+      margin-bottom: 24px;
+    }
+
+    .content-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Detail Info */
+    .detail-table {
+      width: 100%;
+    }
+
+    .detail-row {
+      display: flex;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--gray-100);
+    }
+
+    .detail-label {
+      width: 80px;
+      font-size: 11px;
+      color: var(--gray-600);
+    }
+
+    .detail-value {
+      flex: 1;
+      font-size: 11px;
+      color: var(--black);
+    }
+
+    /* Reviews */
+    .review-summary {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      background: var(--gray-100);
+      border-radius: 12px;
+      margin-bottom: 16px;
+    }
+
+    .review-score {
+      text-align: center;
+    }
+
+    .review-score-num {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--burgundy);
+    }
+
+    .review-stars {
+      color: #FFB800;
+      font-size: 12px;
+    }
+
+    .review-bars {
+      flex: 1;
+    }
+
+    .review-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    .review-bar-label {
+      font-size: 9px;
+      color: var(--gray-500);
+      width: 12px;
+    }
+
+    .review-bar-bg {
+      flex: 1;
+      height: 4px;
+      background: var(--gray-200);
+      border-radius: 2px;
+    }
+
+    .review-bar-fill {
+      height: 100%;
+      background: var(--burgundy);
+      border-radius: 2px;
+    }
+
+    .review-bar-count {
+      font-size: 9px;
+      color: var(--gray-500);
+      width: 16px;
+      text-align: right;
+    }
+
+    .review-card {
+      padding: 14px;
+      border: 1px solid var(--gray-200);
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+
+    .review-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .reviewer-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .reviewer-avatar {
+      width: 28px;
+      height: 28px;
+      background: var(--gray-200);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+
+    .reviewer-name {
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .review-date {
+      font-size: 10px;
+      color: var(--gray-500);
+    }
+
+    .review-rating {
+      color: #FFB800;
+      font-size: 10px;
+    }
+
+    .review-text {
+      font-size: 11px;
+      color: var(--gray-600);
+      line-height: 1.5;
+    }
+
+    .review-tags {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .review-tag {
+      padding: 3px 8px;
+      background: var(--gray-100);
+      border-radius: 10px;
+      font-size: 9px;
+      color: var(--gray-600);
+    }
+
+    /* Q&A */
+    .qna-card {
+      padding: 14px;
+      border: 1px solid var(--gray-200);
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+
+    .qna-question {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .qna-badge {
+      width: 20px;
+      height: 20px;
+      background: var(--burgundy);
+      color: var(--white);
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .qna-badge.answer {
+      background: var(--black);
+    }
+
+    .qna-text {
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .qna-meta {
+      font-size: 10px;
+      color: var(--gray-500);
+      margin-top: 4px;
+    }
+
+    .qna-answer {
+      display: flex;
+      gap: 8px;
+      padding: 10px;
+      background: var(--gray-100);
+      border-radius: 8px;
+    }
+
+    /* Recommended Products */
+    .recommended-section {
+      padding: 16px 15px 100px;
+      background: var(--gray-100);
+    }
+
+    .recommended-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .recommended-subtitle {
+      font-size: 10px;
+      color: var(--gray-600);
+      margin-bottom: 12px;
+    }
+
+    .recommended-scroll {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      margin: 0 -15px;
+      padding: 0 15px;
+    }
+
+    .recommended-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .recommended-card {
+      min-width: 120px;
+    }
+
+    .recommended-image {
+      width: 120px;
+      height: 140px;
+      background: var(--white);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      margin-bottom: 8px;
+      position: relative;
+    }
+
+    .recommended-name {
+      font-size: 10px;
+      font-weight: 500;
+      margin-bottom: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .recommended-price {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--burgundy);
+    }
+
+    .provider-tag {
+      position: absolute;
+      bottom: 6px;
+      left: 6px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 8px;
+      font-weight: 600;
+    }
+
+    .provider-tag.official {
+      background: var(--black);
+      color: var(--white);
+    }
+
+    .provider-tag.seller {
+      background: var(--burgundy);
+      color: var(--white);
+    }
+
+    /* Bottom CTA */
+    .bottom-cta {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 10px 15px 26px;
+      background: var(--white);
+      border-top: 1px solid var(--gray-200);
+      display: flex;
+      gap: 10px;
+    }
+
+    .cart-btn {
+      width: 48px;
+      height: 48px;
+      border: 1px solid var(--gray-300);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--white);
+    }
+
+    .reserve-btn {
+      flex: 1;
+      padding: 14px;
+      background: var(--burgundy);
+      color: var(--white);
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    /* Date Selection Screen */
+    .date-header {
+      padding: 16px 15px;
+      background: var(--gray-100);
+      border-radius: 12px;
+      margin: 0 15px 16px;
+    }
+
+    .date-header-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .date-header-img {
+      width: 50px;
+      height: 50px;
+      background: var(--white);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+
+    .date-header-info {
+      flex: 1;
+    }
+
+    .date-header-name {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .date-header-price {
+      font-size: 12px;
+      color: var(--burgundy);
+      font-weight: 600;
+    }
+
+    .calendar-container {
+      padding: 0 15px;
+    }
+
+    .calendar-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .calendar-month {
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .calendar-nav-btns {
+      display: flex;
+      gap: 8px;
+    }
+
+    .calendar-nav-btn {
+      width: 28px;
+      height: 28px;
+      border: 1px solid var(--gray-200);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--white);
+    }
+
+    .calendar-days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 2px;
+      margin-bottom: 8px;
+    }
+
+    .day-header {
+      text-align: center;
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--gray-500);
+      padding: 8px 0;
+    }
+
+    .day-header:first-child {
+      color: var(--error);
+    }
+
+    .day-header:last-child {
+      color: #2196F3;
+    }
+
+    .calendar-dates {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 2px;
+    }
+
+    .date-cell {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 500;
+      border-radius: 50%;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .date-cell.today {
+      border: 1px solid var(--burgundy);
+    }
+
+    .date-cell.start {
+      background: var(--burgundy);
+      color: var(--white);
+      border-radius: 50% 0 0 50%;
+    }
+
+    .date-cell.end {
+      background: var(--burgundy);
+      color: var(--white);
+      border-radius: 0 50% 50% 0;
+    }
+
+    .date-cell.in-range {
+      background: #F8E0E6;
+      border-radius: 0;
+    }
+
+    .date-cell.single {
+      background: var(--burgundy);
+      color: var(--white);
+      border-radius: 50%;
+    }
+
+    .date-cell.disabled {
+      color: var(--gray-300);
+      cursor: not-allowed;
+    }
+
+    .date-cell.unavailable {
+      color: var(--gray-300);
+      text-decoration: line-through;
+    }
+
+    .date-cell.unavailable::after {
+      content: '';
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: var(--error);
+      border-radius: 50%;
+      bottom: 2px;
+    }
+
+    /* Selection Summary */
+    .selection-summary {
+      margin: 16px 15px;
+      padding: 14px;
+      background: var(--gray-100);
+      border-radius: 12px;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .summary-label {
+      font-size: 11px;
+      color: var(--gray-600);
+    }
+
+    .summary-value {
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .summary-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 10px;
+      border-top: 1px solid var(--gray-200);
+    }
+
+    .summary-total-label {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .summary-total-price {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--burgundy);
+    }
+
+    .price-note {
+      font-size: 9px;
+      color: var(--gray-500);
+      text-align: right;
+      margin-top: 4px;
+    }
+
+    /* Legend */
+    .calendar-legend {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 12px;
+      padding-bottom: 16px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 9px;
+      color: var(--gray-600);
+    }
+
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .legend-dot.available {
+      background: var(--burgundy);
+    }
+
+    .legend-dot.unavailable {
+      background: var(--gray-300);
+    }
+
+    .legend-dot.booked {
+      background: var(--error);
+    }
+
+    /* Detail Images */
+    .detail-images {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .detail-image-item {
+      width: 100%;
+    }
+
+    .detail-image-placeholder {
+      width: 100%;
+      height: 200px;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--gray-100);
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🎩 리웨어스</h1>
+    <p>상품 상세페이지 UI 프리뷰 • 블랙/화이트 + 버건디</p>
+  </div>
+
+  <!-- 상품 상세 -->
+  <div class="section">
+    <div class="section-title">01. 상품 상세 (메인)</div>
+    <div class="screens-row">
+      
+      <!-- 상품 상세 - 메인 -->
+      <div class="screen-wrapper">
+        <div class="screen-label">상품 상세 (상단)</div>
+        <div class="phone-frame scrollable">
+          <div class="status-bar light">
+            <span>9:41</span>
+            <span>●●●●● ⚡ 100%</span>
+          </div>
+          
+          <!-- Header with Home & Cart -->
+          <div class="detail-header">
+            <div class="header-left">
+              <div class="icon-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="19" y1="12" x2="5" y2="12"></line>
+                  <polyline points="12,19 5,12 12,5"></polyline>
+                </svg>
+              </div>
+            </div>
+            <div class="header-right">
+              <div class="icon-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                </svg>
+              </div>
+              <div class="icon-btn cart-badge">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M6 6h15l-1.5 9h-12z"></path>
+                  <circle cx="9" cy="20" r="1"></circle>
+                  <circle cx="18" cy="20" r="1"></circle>
+                  <path d="M6 6L5 3H2"></path>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product Image -->
+          <div class="product-image-container">
+            🖤
+            <div class="image-indicators">
+              <span class="indicator active"></span>
+              <span class="indicator"></span>
+              <span class="indicator"></span>
+              <span class="indicator"></span>
+            </div>
+            <div class="action-buttons">
+              <div class="action-btn liked">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                </svg>
+              </div>
+              <div class="action-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="18" cy="5" r="3"></circle>
+                  <circle cx="6" cy="12" r="3"></circle>
+                  <circle cx="18" cy="19" r="3"></circle>
+                  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                  <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product Info -->
+          <div class="product-info">
+            <span class="status-badge">대여 가능</span>
+            <h1 class="product-title">클래식 블랙 블레이저</h1>
+            <p class="product-desc">고급스러운 울 혼방 소재의 클래식한 핏. 포멀한 자리에도, 캐주얼한 데일리룩에도 완벽하게 어울리는 만능 아이템입니다.</p>
+
+            <!-- Info Box -->
+            <div class="info-box">
+              <div class="info-row">
+                <span class="info-label">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                  </svg>
+                  대여 가격
+                </span>
+                <span class="info-value price">15,000원 <span style="font-size: 11px; font-weight: 400; color: var(--gray-600);">/1일</span></span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20.38 3.46L16 2L12 3.46L8 2L3.62 3.46A2 2 0 0 0 2 5.36V21l4-1.5 4 1.5 4-1.5 4 1.5 4-1.5V5.36a2 2 0 0 0-1.62-1.9z"></path>
+                  </svg>
+                  사이즈
+                </span>
+                <div class="size-chips">
+                  <span class="size-chip unavailable">S</span>
+                  <span class="size-chip available">M</span>
+                  <span class="size-chip available">L</span>
+                  <span class="size-chip unavailable">XL</span>
+                </div>
+              </div>
+              <div class="info-row">
+                <span class="info-label">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                  대여 가능 장소
+                </span>
+                <span class="location-link">
+                  대전역 1번 출구
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9,18 15,12 9,6"></polyline>
+                  </svg>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab Navigation -->
+          <div class="tab-nav">
+            <div class="tab-item active">상세정보</div>
+            <div class="tab-item">리뷰 <span class="tab-badge">24</span></div>
+            <div class="tab-item">Q&A <span class="tab-badge">5</span></div>
+          </div>
+
+          <!-- Bottom CTA -->
+          <div class="bottom-cta">
+            <div class="cart-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M6 6h15l-1.5 9h-12z"></path>
+                <circle cx="9" cy="20" r="1"></circle>
+                <circle cx="18" cy="20" r="1"></circle>
+                <path d="M6 6L5 3H2"></path>
+              </svg>
+            </div>
+            <button class="reserve-btn">대여하기</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 상품 상세 - 스크롤 (상세정보) -->
+      <div class="screen-wrapper">
+        <div class="screen-label">상세정보 탭</div>
+        <div class="phone-frame scrollable">
+          <div class="status-bar light">
+            <span>9:41</span>
+            <span>●●●●● ⚡ 100%</span>
+          </div>
+          
+          <div class="detail-header">
+            <div class="header-left">
+              <div class="icon-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="19" y1="12" x2="5" y2="12"></line>
+                  <polyline points="12,19 5,12 12,5"></polyline>
+                </svg>
+              </div>
+            </div>
+            <div class="header-right">
+              <div class="icon-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                </svg>
+              </div>
+              <div class="icon-btn cart-badge">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M6 6h15l-1.5 9h-12z"></path>
+                  <circle cx="9" cy="20" r="1"></circle>
+                  <circle cx="18" cy="20" r="1"></circle>
+                  <path d="M6 6L5 3H2"></path>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab Navigation -->
+          <div class="tab-nav" style="top: 35px;">
+            <div class="tab-item active">상세정보</div>
+            <div class="tab-item">리뷰 <span class="tab-badge">24</span></div>
+            <div class="tab-item">Q&A <span class="tab-badge">5</span></div>
+          </div>
+
+          <!-- Detail Content -->
+          <div class="tab-content">
+            <!-- 상세 이미지 섹션 -->
+            <div class="content-section">
+              <div class="content-title">📷 상세 이미지</div>
+              <div class="detail-images">
+                <div class="detail-image-item">
+                  <div class="detail-image-placeholder" style="background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);">
+                    <span style="font-size: 50px;">🖤</span>
+                    <span style="color: white; font-size: 10px; margin-top: 8px;">전면 이미지</span>
+                  </div>
+                </div>
+                <div class="detail-image-item">
+                  <div class="detail-image-placeholder" style="background: linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%);">
+                    <span style="font-size: 50px;">🧥</span>
+                    <span style="color: white; font-size: 10px; margin-top: 8px;">후면 이미지</span>
+                  </div>
+                </div>
+                <div class="detail-image-item">
+                  <div class="detail-image-placeholder" style="background: linear-gradient(135deg, #4a4a4a 0%, #3a3a3a 100%);">
+                    <span style="font-size: 50px;">✨</span>
+                    <span style="color: white; font-size: 10px; margin-top: 8px;">디테일 컷</span>
+                  </div>
+                </div>
+                <div class="detail-image-item">
+                  <div class="detail-image-placeholder" style="background: linear-gradient(135deg, #333 0%, #222 100%);">
+                    <span style="font-size: 50px;">👔</span>
+                    <span style="color: white; font-size: 10px; margin-top: 8px;">착용 이미지</span>
+                  </div>
+                </div>
+                <div class="detail-image-item">
+                  <div class="detail-image-placeholder" style="background: linear-gradient(135deg, #2d2d2d 0%, #1d1d1d 100%);">
+                    <span style="font-size: 50px;">🏷️</span>
+                    <span style="color: white; font-size: 10px; margin-top: 8px;">라벨/태그</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="content-section">
+              <div class="content-title">📋 상품 정보</div>
+              <div class="detail-table">
+                <div class="detail-row">
+                  <span class="detail-label">브랜드</span>
+                  <span class="detail-value">리웨어스 오리지널</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">소재</span>
+                  <span class="detail-value">울 50%, 폴리에스터 50%</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">색상</span>
+                  <span class="detail-value">블랙</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">시즌</span>
+                  <span class="detail-value">사계절 (봄, 가을 추천)</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">세탁</span>
+                  <span class="detail-value">드라이클리닝 권장</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="content-section">
+              <div class="content-title">📐 사이즈 가이드</div>
+              <div style="background: var(--gray-100); border-radius: 10px; padding: 12px; font-size: 10px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; text-align: center; font-weight: 600; margin-bottom: 8px; color: var(--gray-600);">
+                  <span>사이즈</span>
+                  <span>어깨</span>
+                  <span>가슴</span>
+                  <span>소매</span>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; text-align: center; padding: 6px 0; border-top: 1px solid var(--gray-200);">
+                  <span style="font-weight: 600;">M</span>
+                  <span>42cm</span>
+                  <span>102cm</span>
+                  <span>60cm</span>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; text-align: center; padding: 6px 0; border-top: 1px solid var(--gray-200);">
+                  <span style="font-weight: 600;">L</span>
+                  <span>44cm</span>
+                  <span>106cm</span>
+                  <span>62cm</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="content-section">
+              <div class="content-title">⚠️ 주의사항</div>
+              <ul style="font-size: 11px; color: var(--gray-600); line-height: 1.8; padding-left: 16px;">
+                <li>대여 기간 내 반납해주세요</li>
+                <li>오염/훼손 시 추가 비용이 발생할 수 있습니다</li>
+                <li>세탁하지 않은 상태로 반납해주세요</li>
+                <li>반납 전 사진 촬영을 권장합니다</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Recommended Section -->
+          <div class="recommended-section">
+            <div class="recommended-title">🛍️ 함께 대여하면 좋은 상품</div>
+            <div class="recommended-subtitle">이 상품을 대여한 분들이 함께 선택했어요</div>
+            <div class="recommended-scroll">
+              <div class="recommended-card">
+                <div class="recommended-image">
+                  👖
+                  <span class="provider-tag official">리웨어스</span>
+                </div>
+                <div class="recommended-name">슬림핏 블랙 슬랙스</div>
+                <div class="recommended-price">12,000원/1일</div>
+              </div>
+              <div class="recommended-card">
+                <div class="recommended-image">
+                  👔
+                  <span class="provider-tag seller">판매자</span>
+                </div>
+                <div class="recommended-name">화이트 드레스 셔츠</div>
+                <div class="recommended-price">10,000원/1일</div>
+              </div>
+              <div class="recommended-card">
+                <div class="recommended-image">
+                  👞
+                  <span class="provider-tag official">리웨어스</span>
+                </div>
+                <div class="recommended-name">블랙 옥스포드 구두</div>
+                <div class="recommended-price">8,000원/1일</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom CTA -->
+          <div class="bottom-cta">
+            <div class="cart-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M6 6h15l-1.5 9h-12z"></path>
+                <circle cx="9" cy="20" r="1"></circle>
+                <circle cx="18" cy="20" r="1"></circle>
+                <path d="M6 6L5 3H2"></path>
+              </svg>
+            </div>
+            <button class="reserve-btn">대여하기</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 리뷰 탭 -->
+      <div class="screen-wrapper">
+        <div class="screen-label">리뷰 탭</div>
+        <div class="phone-frame scrollable">
+          <div class="status-bar light">
+            <span>9:41</span>
+            <span>●●●●● ⚡ 100%</span>
+          </div>
+          
+          <div class="detail-header">
+            <div class="header-left">
+              <div class="icon-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="19" y1="12" x2="5" y2="12"></line>
+                  <polyline points="12,19 5,12 12,5"></polyline>
+                </svg>
+              </div>
+            </div>
+            <div class="header-right">
+              <div class="icon-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                </svg>
+              </div>
+              <div class="icon-btn cart-badge">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M6 6h15l-1.5 9h-12z"></path>
+                  <circle cx="9" cy="20" r="1"></circle>
+                  <circle cx="18" cy="20" r="1"></circle>
+                  <path d="M6 6L5 3H2"></path>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab Navigation -->
+          <div class="tab-nav" style="top: 35px;">
+            <div class="tab-item">상세정보</div>
+            <div class="tab-item active">리뷰 <span class="tab-badge">24</span></div>
+            <div class="tab-item">Q&A <span class="tab-badge">5</span></div>
+          </div>
+
+          <!-- Review Content -->
+          <div class="tab-content">
+            <!-- Review Summary -->
+            <div class="review-summary">
+              <div class="review-score">
+                <div class="review-score-num">4.8</div>
+                <div class="review-stars">★★★★★</div>
+              </div>
+              <div class="review-bars">
+                <div class="review-bar-row">
+                  <span class="review-bar-label">5</span>
+                  <div class="review-bar-bg"><div class="review-bar-fill" style="width: 80%;"></div></div>
+                  <span class="review-bar-count">19</span>
+                </div>
+                <div class="review-bar-row">
+                  <span class="review-bar-label">4</span>
+                  <div class="review-bar-bg"><div class="review-bar-fill" style="width: 15%;"></div></div>
+                  <span class="review-bar-count">4</span>
+                </div>
+                <div class="review-bar-row">
+                  <span class="review-bar-label">3</span>
+                  <div class="review-bar-bg"><div class="review-bar-fill" style="width: 4%;"></div></div>
+                  <span class="review-bar-count">1</span>
+                </div>
+                <div class="review-bar-row">
+                  <span class="review-bar-label">2</span>
+                  <div class="review-bar-bg"><div class="review-bar-fill" style="width: 0%;"></div></div>
+                  <span class="review-bar-count">0</span>
+                </div>
+                <div class="review-bar-row">
+                  <span class="review-bar-label">1</span>
+                  <div class="review-bar-bg"><div class="review-bar-fill" style="width: 0%;"></div></div>
+                  <span class="review-bar-count">0</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Review List -->
+            <div class="review-card">
+              <div class="review-header">
+                <div class="reviewer-info">
+                  <div class="reviewer-avatar">👩</div>
+                  <div>
+                    <div class="reviewer-name">fashion_lover</div>
+                    <div class="review-date">2025.11.28</div>
+                  </div>
+                </div>
+                <div class="review-rating">★★★★★</div>
+              </div>
+              <div class="review-text">면접 때 입었는데 핏이 정말 예뻤어요! 사이즈 M 추천합니다. 픽업/반납도 편리했고 다음에 또 이용할게요 😊</div>
+              <div class="review-tags">
+                <span class="review-tag">핏이 좋아요</span>
+                <span class="review-tag">소재가 고급져요</span>
+              </div>
+            </div>
+
+            <div class="review-card">
+              <div class="review-header">
+                <div class="reviewer-info">
+                  <div class="reviewer-avatar">👨</div>
+                  <div>
+                    <div class="reviewer-name">style_king</div>
+                    <div class="review-date">2025.11.25</div>
+                  </div>
+                </div>
+                <div class="review-rating">★★★★★</div>
+              </div>
+              <div class="review-text">결혼식 참석용으로 대여했어요. 가격 대비 퀄리티가 훌륭합니다. 세탁 상태도 깔끔했어요.</div>
+              <div class="review-tags">
+                <span class="review-tag">가성비 좋아요</span>
+              </div>
+            </div>
+
+            <div class="review-card">
+              <div class="review-header">
+                <div class="reviewer-info">
+                  <div class="reviewer-avatar">👩</div>
+                  <div>
+                    <div class="reviewer-name">minimal_style</div>
+                    <div class="review-date">2025.11.20</div>
+                  </div>
+                </div>
+                <div class="review-rating">★★★★☆</div>
+              </div>
+              <div class="review-text">전체적으로 만족해요. 다만 어깨가 조금 넓은 편이라 작은 사이즈로 하셔도 될 것 같아요.</div>
+            </div>
+          </div>
+
+          <!-- Bottom CTA -->
+          <div class="bottom-cta">
+            <div class="cart-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M6 6h15l-1.5 9h-12z"></path>
+                <circle cx="9" cy="20" r="1"></circle>
+                <circle cx="18" cy="20" r="1"></circle>
+                <path d="M6 6L5 3H2"></path>
+              </svg>
+            </div>
+            <button class="reserve-btn">대여하기</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Q&A 탭 -->
+      <div class="screen-wrapper">
+        <div class="screen-label">Q&A 탭</div>
+        <div class="phone-frame scrollable">
+          <div class="status-bar light">
+            <span>9:41</span>
+            <span>●●●●● ⚡ 100%</span>
+          </div>
+          
+          <div class="detail-header">
+            <div class="header-left">
+              <div class="icon-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="19" y1="12" x2="5" y2="12"></line>
+                  <polyline points="12,19 5,12 12,5"></polyline>
+                </svg>
+              </div>
+            </div>
+            <div class="header-right">
+              <div class="icon-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                </svg>
+              </div>
+              <div class="icon-btn cart-badge">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M6 6h15l-1.5 9h-12z"></path>
+                  <circle cx="9" cy="20" r="1"></circle>
+                  <circle cx="18" cy="20" r="1"></circle>
+                  <path d="M6 6L5 3H2"></path>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab Navigation -->
+          <div class="tab-nav" style="top: 35px;">
+            <div class="tab-item">상세정보</div>
+            <div class="tab-item">리뷰 <span class="tab-badge">24</span></div>
+            <div class="tab-item active">Q&A <span class="tab-badge">5</span></div>
+          </div>
+
+          <!-- Q&A Content -->
+          <div class="tab-content">
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 12px;">
+              <button style="background: var(--black); color: white; border: none; padding: 8px 14px; border-radius: 6px; font-size: 11px; font-weight: 600;">문의하기</button>
+            </div>
+
+            <!-- Q&A List -->
+            <div class="qna-card">
+              <div class="qna-question">
+                <span class="qna-badge">Q</span>
+                <div>
+                  <div class="qna-text">키 175cm 몸무게 68kg인데 어떤 사이즈가 좋을까요?</div>
+                  <div class="qna-meta">user_123 · 2025.11.27</div>
+                </div>
+              </div>
+              <div class="qna-answer">
+                <span class="qna-badge answer">A</span>
+                <div>
+                  <div class="qna-text">안녕하세요! 해당 체형이시라면 M사이즈를 추천드려요. 여유있게 입으시려면 L사이즈도 괜찮으실 거예요 😊</div>
+                  <div class="qna-meta">리웨어스 · 2025.11.27</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="qna-card">
+              <div class="qna-question">
+                <span class="qna-badge">Q</span>
+                <div>
+                  <div class="qna-text">당일 픽업도 가능한가요?</div>
+                  <div class="qna-meta">quick_rent · 2025.11.25</div>
+                </div>
+              </div>
+              <div class="qna-answer">
+                <span class="qna-badge answer">A</span>
+                <div>
+                  <div class="qna-text">당일 픽업은 재고 상황에 따라 가능합니다. 오전 11시 이전 예약 시 당일 오후 2시 이후 픽업 가능해요!</div>
+                  <div class="qna-meta">리웨어스 · 2025.11.25</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="qna-card">
+              <div class="qna-question">
+                <span class="qna-badge">Q</span>
+                <div>
+                  <div class="qna-text">연장 대여는 어떻게 하나요?</div>
+                  <div class="qna-meta">busy_person · 2025.11.20</div>
+                </div>
+              </div>
+              <div class="qna-answer">
+                <span class="qna-badge answer">A</span>
+                <div>
+                  <div class="qna-text">마이페이지 > 예약 내역에서 연장 신청이 가능합니다. 다음 예약이 없는 경우에만 연장 가능하니 참고해주세요!</div>
+                  <div class="qna-meta">리웨어스 · 2025.11.20</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom CTA -->
+          <div class="bottom-cta">
+            <div class="cart-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M6 6h15l-1.5 9h-12z"></path>
+                <circle cx="9" cy="20" r="1"></circle>
+                <circle cx="18" cy="20" r="1"></circle>
+                <path d="M6 6L5 3H2"></path>
+              </svg>
+            </div>
+            <button class="reserve-btn">대여하기</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 날짜 선택 -->
+  <div class="section">
+    <div class="section-title">02. 날짜 선택 (드래그/직접 선택)</div>
+    <div class="screens-row">
+      
+      <!-- 날짜 선택 - 초기 -->
+      <div class="screen-wrapper">
+        <div class="screen-label">날짜 선택 (초기)</div>
+        <div class="phone-frame">
+          <div class="status-bar light">
+            <span>9:41</span>
+            <span>●●●●● ⚡ 100%</span>
+          </div>
+          
+          <div class="detail-header">
+            <div class="header-left">
+              <div class="icon-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="19" y1="12" x2="5" y2="12"></line>
+                  <polyline points="12,19 5,12 12,5"></polyline>
+                </svg>
+              </div>
+            </div>
+            <span style="font-size: 14px; font-weight: 600;">날짜 선택</span>
+            <div style="width: 20px;"></div>
+          </div>
+
+          <!-- Product Mini Info -->
+          <div class="date-header">
+            <div class="date-header-row">
+              <div class="date-header-img">🖤</div>
+              <div class="date-header-info">
+                <div class="date-header-name">클래식 블랙 블레이저</div>
+                <div class="date-header-price">15,000원/1일</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Calendar -->
+          <div class="calendar-container">
+            <div class="calendar-nav">
+              <span class="calendar-month">2025년 12월</span>
+              <div class="calendar-nav-btns">
+                <div class="calendar-nav-btn">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
+                    <polyline points="15,18 9,12 15,6"></polyline>
+                  </svg>
+                </div>
+                <div class="calendar-nav-btn">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
+                    <polyline points="9,18 15,12 9,6"></polyline>
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <div class="calendar-days">
+              <span class="day-header">일</span>
+              <span class="day-header">월</span>
+              <span class="day-header">화</span>
+              <span class="day-header">수</span>
+              <span class="day-header">목</span>
+              <span class="day-header">금</span>
+              <span class="day-header">토</span>
+            </div>
+
+            <div class="calendar-dates">
+              <span class="date-cell"></span>
+              <span class="date-cell today">1</span>
+              <span class="date-cell">2</span>
+              <span class="date-cell">3</span>
+              <span class="date-cell">4</span>
+              <span class="date-cell">5</span>
+              <span class="date-cell">6</span>
+              <span class="date-cell">7</span>
+              <span class="date-cell">8</span>
+              <span class="date-cell">9</span>
+              <span class="date-cell unavailable">10</span>
+              <span class="date-cell unavailable">11</span>
+              <span class="date-cell unavailable">12</span>
+              <span class="date-cell">13</span>
+              <span class="date-cell">14</span>
+              <span class="date-cell">15</span>
+              <span class="date-cell">16</span>
+              <span class="date-cell">17</span>
+              <span class="date-cell">18</span>
+              <span class="date-cell">19</span>
+              <span class="date-cell unavailable">20</span>
+              <span class="date-cell unavailable">21</span>
+              <span class="date-cell">22</span>
+              <span class="date-cell">23</span>
+              <span class="date-cell">24</span>
+              <span class="date-cell">25</span>
+              <span class="date-cell">26</span>
+              <span class="date-cell">27</span>
+              <span class="date-cell">28</span>
+              <span class="date-cell">29</span>
+              <span class="date-cell">30</span>
+              <span class="date-cell">31</span>
+            </div>
+
+            <div class="calendar-legend">
+              <div class="legend-item">
+                <div class="legend-dot available"></div>
+                <span>선택됨</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-dot unavailable"></div>
+                <span>선택불가</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-dot booked"></div>
+                <span>예약됨</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="padding: 12px 15px; text-align: center; color: var(--gray-500); font-size: 11px;">
+            시작일과 종료일을 선택해주세요
+          </div>
+
+          <!-- Bottom CTA -->
+          <div class="bottom-cta">
+            <button class="reserve-btn" style="background: var(--gray-300);">날짜를 선택해주세요</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 날짜 선택 - 기간 선택됨 -->
+      <div class="screen-wrapper">
+        <div class="screen-label">날짜 선택 (기간 선택)</div>
+        <div class="phone-frame">
+          <div class="status-bar light">
+            <span>9:41</span>
+            <span>●●●●● ⚡ 100%</span>
+          </div>
+          
+          <div class="detail-header">
+            <div class="header-left">
+              <div class="icon-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="19" y1="12" x2="5" y2="12"></line>
+                  <polyline points="12,19 5,12 12,5"></polyline>
+                </svg>
+              </div>
+            </div>
+            <span style="font-size: 14px; font-weight: 600;">날짜 선택</span>
+            <div style="width: 20px;"></div>
+          </div>
+
+          <!-- Product Mini Info -->
+          <div class="date-header">
+            <div class="date-header-row">
+              <div class="date-header-img">🖤</div>
+              <div class="date-header-info">
+                <div class="date-header-name">클래식 블랙 블레이저</div>
+                <div class="date-header-price">15,000원/1일</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Calendar -->
+          <div class="calendar-container">
+            <div class="calendar-nav">
+              <span class="calendar-month">2025년 12월</span>
+              <div class="calendar-nav-btns">
+                <div class="calendar-nav-btn">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
+                    <polyline points="15,18 9,12 15,6"></polyline>
+                  </svg>
+                </div>
+                <div class="calendar-nav-btn">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
+                    <polyline points="9,18 15,12 9,6"></polyline>
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <div class="calendar-days">
+              <span class="day-header">일</span>
+              <span class="day-header">월</span>
+              <span class="day-header">화</span>
+              <span class="day-header">수</span>
+              <span class="day-header">목</span>
+              <span class="day-header">금</span>
+              <span class="day-header">토</span>
+            </div>
+
+            <div class="calendar-dates">
+              <span class="date-cell"></span>
+              <span class="date-cell today">1</span>
+              <span class="date-cell">2</span>
+              <span class="date-cell">3</span>
+              <span class="date-cell">4</span>
+              <span class="date-cell">5</span>
+              <span class="date-cell">6</span>
+              <span class="date-cell">7</span>
+              <span class="date-cell">8</span>
+              <span class="date-cell">9</span>
+              <span class="date-cell unavailable">10</span>
+              <span class="date-cell unavailable">11</span>
+              <span class="date-cell unavailable">12</span>
+              <span class="date-cell">13</span>
+              <span class="date-cell">14</span>
+              <span class="date-cell start">15</span>
+              <span class="date-cell in-range">16</span>
+              <span class="date-cell in-range">17</span>
+              <span class="date-cell in-range">18</span>
+              <span class="date-cell end">19</span>
+              <span class="date-cell unavailable">20</span>
+              <span class="date-cell unavailable">21</span>
+              <span class="date-cell">22</span>
+              <span class="date-cell">23</span>
+              <span class="date-cell">24</span>
+              <span class="date-cell">25</span>
+              <span class="date-cell">26</span>
+              <span class="date-cell">27</span>
+              <span class="date-cell">28</span>
+              <span class="date-cell">29</span>
+              <span class="date-cell">30</span>
+              <span class="date-cell">31</span>
+            </div>
+
+            <div class="calendar-legend">
+              <div class="legend-item">
+                <div class="legend-dot available"></div>
+                <span>선택됨</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-dot unavailable"></div>
+                <span>선택불가</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-dot booked"></div>
+                <span>예약됨</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Selection Summary -->
+          <div class="selection-summary">
+            <div class="summary-row">
+              <span class="summary-label">대여 기간</span>
+              <span class="summary-value">12월 15일 (월) ~ 12월 19일 (금)</span>
+            </div>
+            <div class="summary-row">
+              <span class="summary-label">대여 일수</span>
+              <span class="summary-value">5일</span>
+            </div>
+            <div class="summary-total">
+              <span class="summary-total-label">예상 대여료</span>
+              <div>
+                <span class="summary-total-price">75,000원</span>
+                <div class="price-note">15,000원 × 5일</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom CTA -->
+          <div class="bottom-cta">
+            <button class="reserve-btn">다음</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 날짜 선택 - 1일 선택 -->
+      <div class="screen-wrapper">
+        <div class="screen-label">날짜 선택 (1일)</div>
+        <div class="phone-frame">
+          <div class="status-bar light">
+            <span>9:41</span>
+            <span>●●●●● ⚡ 100%</span>
+          </div>
+          
+          <div class="detail-header">
+            <div class="header-left">
+              <div class="icon-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="19" y1="12" x2="5" y2="12"></line>
+                  <polyline points="12,19 5,12 12,5"></polyline>
+                </svg>
+              </div>
+            </div>
+            <span style="font-size: 14px; font-weight: 600;">날짜 선택</span>
+            <div style="width: 20px;"></div>
+          </div>
+
+          <!-- Product Mini Info -->
+          <div class="date-header">
+            <div class="date-header-row">
+              <div class="date-header-img">🖤</div>
+              <div class="date-header-info">
+                <div class="date-header-name">클래식 블랙 블레이저</div>
+                <div class="date-header-price">15,000원/1일</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Calendar -->
+          <div class="calendar-container">
+            <div class="calendar-nav">
+              <span class="calendar-month">2025년 12월</span>
+              <div class="calendar-nav-btns">
+                <div class="calendar-nav-btn">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
+                    <polyline points="15,18 9,12 15,6"></polyline>
+                  </svg>
+                </div>
+                <div class="calendar-nav-btn">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
+                    <polyline points="9,18 15,12 9,6"></polyline>
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <div class="calendar-days">
+              <span class="day-header">일</span>
+              <span class="day-header">월</span>
+              <span class="day-header">화</span>
+              <span class="day-header">수</span>
+              <span class="day-header">목</span>
+              <span class="day-header">금</span>
+              <span class="day-header">토</span>
+            </div>
+
+            <div class="calendar-dates">
+              <span class="date-cell"></span>
+              <span class="date-cell today">1</span>
+              <span class="date-cell">2</span>
+              <span class="date-cell">3</span>
+              <span class="date-cell">4</span>
+              <span class="date-cell">5</span>
+              <span class="date-cell">6</span>
+              <span class="date-cell">7</span>
+              <span class="date-cell">8</span>
+              <span class="date-cell">9</span>
+              <span class="date-cell unavailable">10</span>
+              <span class="date-cell unavailable">11</span>
+              <span class="date-cell unavailable">12</span>
+              <span class="date-cell">13</span>
+              <span class="date-cell">14</span>
+              <span class="date-cell single">15</span>
+              <span class="date-cell">16</span>
+              <span class="date-cell">17</span>
+              <span class="date-cell">18</span>
+              <span class="date-cell">19</span>
+              <span class="date-cell unavailable">20</span>
+              <span class="date-cell unavailable">21</span>
+              <span class="date-cell">22</span>
+              <span class="date-cell">23</span>
+              <span class="date-cell">24</span>
+              <span class="date-cell">25</span>
+              <span class="date-cell">26</span>
+              <span class="date-cell">27</span>
+              <span class="date-cell">28</span>
+              <span class="date-cell">29</span>
+              <span class="date-cell">30</span>
+              <span class="date-cell">31</span>
+            </div>
+
+            <div class="calendar-legend">
+              <div class="legend-item">
+                <div class="legend-dot available"></div>
+                <span>선택됨</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-dot unavailable"></div>
+                <span>선택불가</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-dot booked"></div>
+                <span>예약됨</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Selection Summary -->
+          <div class="selection-summary">
+            <div class="summary-row">
+              <span class="summary-label">대여 기간</span>
+              <span class="summary-value">12월 15일 (월)</span>
+            </div>
+            <div class="summary-row">
+              <span class="summary-label">대여 일수</span>
+              <span class="summary-value">1일</span>
+            </div>
+            <div class="summary-total">
+              <span class="summary-total-label">예상 대여료</span>
+              <div>
+                <span class="summary-total-price">15,000원</span>
+                <div class="price-note">15,000원 × 1일</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="padding: 0 15px;">
+            <div style="background: #FFF8E1; border-radius: 8px; padding: 10px 12px; display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 14px;">💡</span>
+              <span style="font-size: 10px; color: #F57C00;">종료일을 선택하면 기간 대여가 가능해요</span>
+            </div>
+          </div>
+
+          <!-- Bottom CTA -->
+          <div class="bottom-cta">
+            <button class="reserve-btn">다음</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div style="text-align: center; padding: 40px; color: var(--gray-500); font-size: 12px;">
+    <p>리웨어스 상품 상세 UI 프리뷰 • 2025.12.01</p>
+    <p style="margin-top: 8px;">블랙/화이트 기반 + 버건디(#800020) 포인트 컬러</p>
+  </div>
+</body>
+</html>

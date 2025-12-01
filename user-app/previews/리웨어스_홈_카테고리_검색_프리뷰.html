@@ -1,0 +1,1790 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>리웨어스 앱 디자인 프리뷰 v2</title>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <style>
+    :root {
+      --black: #000000;
+      --white: #FFFFFF;
+      --burgundy: #800020;
+      --burgundy-light: #9A2540;
+      --gray-100: #F5F5F5;
+      --gray-200: #E5E5E5;
+      --gray-300: #CCCCCC;
+      --gray-500: #999999;
+      --gray-600: #666666;
+      --success: #388E3C;
+      --error: #D32F2F;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0d0d0d 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .header h1 {
+      color: var(--white);
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .header p {
+      color: var(--gray-500);
+      font-size: 14px;
+    }
+
+    .section {
+      margin-bottom: 60px;
+    }
+
+    .section-title {
+      color: var(--burgundy);
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      margin-bottom: 16px;
+      padding-left: 20px;
+    }
+
+    .screens-row {
+      display: flex;
+      gap: 24px;
+      overflow-x: auto;
+      padding: 20px;
+      scroll-behavior: smooth;
+    }
+
+    .screens-row::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    .screens-row::-webkit-scrollbar-track {
+      background: #333;
+      border-radius: 4px;
+    }
+
+    .screens-row::-webkit-scrollbar-thumb {
+      background: var(--burgundy);
+      border-radius: 4px;
+    }
+
+    .screen-wrapper {
+      flex-shrink: 0;
+    }
+
+    .screen-label {
+      color: var(--gray-500);
+      font-size: 12px;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .phone-frame {
+      width: 280px;
+      height: 606px;
+      background: var(--white);
+      border-radius: 32px;
+      overflow: hidden;
+      box-shadow: 0 25px 80px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.1);
+      position: relative;
+    }
+
+    .phone-frame.dark {
+      background: var(--black);
+    }
+
+    .status-bar {
+      height: 35px;
+      padding: 8px 18px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .status-bar.light {
+      color: var(--black);
+    }
+
+    .status-bar.dark {
+      color: var(--white);
+    }
+
+    /* Splash Screen */
+    .splash-content {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .splash-logo {
+      font-size: 52px;
+      margin-bottom: 12px;
+    }
+
+    .splash-title {
+      color: var(--white);
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .splash-subtitle {
+      color: var(--gray-500);
+      font-size: 11px;
+      margin-top: 6px;
+      letter-spacing: 2px;
+    }
+
+    .splash-loader {
+      position: absolute;
+      bottom: 60px;
+      display: flex;
+      gap: 6px;
+    }
+
+    .splash-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--burgundy);
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    .splash-dot:nth-child(1) { opacity: 0.3; animation-delay: 0s; }
+    .splash-dot:nth-child(2) { opacity: 0.6; animation-delay: 0.2s; }
+    .splash-dot:nth-child(3) { opacity: 1; animation-delay: 0.4s; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.3; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+
+    /* Common Elements */
+    .app-header {
+      padding: 6px 15px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .app-logo {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .app-logo span:first-child {
+      font-size: 22px;
+    }
+
+    .app-logo span:last-child {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .icon-btn {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Banner */
+    .banner {
+      margin: 0 15px 18px;
+      height: 120px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--black) 0%, #1a1a1a 100%);
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .banner-tag {
+      color: var(--burgundy);
+      font-size: 9px;
+      font-weight: 600;
+    }
+
+    .banner-title {
+      color: var(--white);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+
+    .banner-btn {
+      align-self: flex-start;
+      background: var(--burgundy);
+      color: var(--white);
+      padding: 6px 12px;
+      border-radius: 16px;
+      font-size: 9px;
+      font-weight: 600;
+    }
+
+    /* Categories */
+    .categories {
+      display: flex;
+      justify-content: space-around;
+      padding: 0 15px;
+      margin-bottom: 24px;
+    }
+
+    .category-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .category-icon {
+      width: 45px;
+      height: 45px;
+      border-radius: 12px;
+      background: var(--gray-100);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .category-label {
+      font-size: 10px;
+      font-weight: 500;
+    }
+
+    /* Section Header */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 15px;
+      margin-bottom: 12px;
+    }
+
+    .section-header h3 {
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .section-header span {
+      font-size: 10px;
+      color: var(--gray-600);
+    }
+
+    /* Product Cards - Updated */
+    .products-scroll {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding: 0 15px;
+      scrollbar-width: none;
+    }
+
+    .products-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .product-card {
+      min-width: 130px;
+    }
+
+    .product-image-slider {
+      width: 130px;
+      height: 160px;
+      border-radius: 10px;
+      background: var(--gray-100);
+      margin-bottom: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .product-image-slider .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 50px;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    .product-image-slider .slide.active {
+      opacity: 1;
+    }
+
+    .product-image-slider .slide-indicators {
+      position: absolute;
+      bottom: 6px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 4px;
+    }
+
+    .product-image-slider .slide-dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.5);
+    }
+
+    .product-image-slider .slide-dot.active {
+      background: var(--white);
+    }
+
+    .best-badge {
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      background: var(--burgundy);
+      color: var(--white);
+      padding: 3px 6px;
+      border-radius: 3px;
+      font-size: 8px;
+      font-weight: 600;
+      z-index: 2;
+    }
+
+    .stock-badge {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      padding: 3px 6px;
+      border-radius: 3px;
+      font-size: 7px;
+      font-weight: 600;
+      z-index: 2;
+    }
+
+    .stock-badge.available {
+      background: rgba(56, 142, 60, 0.9);
+      color: var(--white);
+    }
+
+    .stock-badge.rented {
+      background: rgba(0,0,0,0.7);
+      color: var(--white);
+    }
+
+    .stock-badge.soon {
+      background: rgba(255, 152, 0, 0.9);
+      color: var(--white);
+    }
+
+    .product-name {
+      font-size: 10px;
+      font-weight: 500;
+      margin-bottom: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .product-price-row {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+      margin-bottom: 3px;
+    }
+
+    .product-price {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--burgundy);
+    }
+
+    .product-price span {
+      font-size: 9px;
+      font-weight: 400;
+      color: var(--gray-600);
+    }
+
+    .product-original-price {
+      font-size: 9px;
+      color: var(--gray-500);
+      text-decoration: line-through;
+    }
+
+    .discount-badge {
+      font-size: 8px;
+      font-weight: 700;
+      color: var(--burgundy);
+    }
+
+    .product-provider {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 8px;
+      color: var(--gray-500);
+    }
+
+    .provider-badge {
+      padding: 1px 4px;
+      border-radius: 2px;
+      font-size: 7px;
+      font-weight: 600;
+    }
+
+    .provider-badge.official {
+      background: var(--black);
+      color: var(--white);
+    }
+
+    .provider-badge.user {
+      background: var(--gray-200);
+      color: var(--gray-600);
+    }
+
+    /* Bottom Navigation - Updated */
+    .bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 62px;
+      background: var(--white);
+      border-top: 1px solid var(--gray-200);
+      display: flex;
+      justify-content: space-around;
+      align-items: flex-start;
+      padding-top: 6px;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .nav-icon {
+      width: 20px;
+      height: 20px;
+    }
+
+    .nav-label {
+      font-size: 8px;
+      font-weight: 500;
+      color: var(--gray-500);
+    }
+
+    .nav-item.active .nav-label {
+      color: var(--black);
+    }
+
+    .nav-dot {
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: var(--burgundy);
+      margin-top: 2px;
+    }
+
+    /* Detail Screen */
+    .detail-header {
+      padding: 6px 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .detail-header-title {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    /* Filter Section - Updated */
+    .filter-section {
+      padding: 0 15px;
+      margin-bottom: 12px;
+    }
+
+    .date-filter {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      background: var(--gray-100);
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+
+    .date-filter-icon {
+      color: var(--burgundy);
+    }
+
+    .date-filter-text {
+      flex: 1;
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .date-filter-value {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--burgundy);
+    }
+
+    .date-filter-clear {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--gray-300);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .availability-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0;
+    }
+
+    .toggle-label {
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .toggle-switch {
+      width: 36px;
+      height: 20px;
+      background: var(--gray-300);
+      border-radius: 10px;
+      position: relative;
+      transition: background 0.3s;
+    }
+
+    .toggle-switch.active {
+      background: var(--burgundy);
+    }
+
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      background: var(--white);
+      border-radius: 50%;
+      top: 2px;
+      left: 2px;
+      transition: transform 0.3s;
+    }
+
+    .toggle-switch.active::after {
+      transform: translateX(16px);
+    }
+
+    .filter-tabs {
+      display: flex;
+      padding: 0 15px;
+      gap: 6px;
+      margin-bottom: 10px;
+      overflow-x: auto;
+    }
+
+    .filter-tab {
+      padding: 6px 12px;
+      border-radius: 16px;
+      background: var(--gray-100);
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--gray-600);
+      white-space: nowrap;
+    }
+
+    .filter-tab.active {
+      background: var(--black);
+      color: var(--white);
+    }
+
+    /* Search Screen */
+    .search-header {
+      padding: 6px 15px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .search-input-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--gray-100);
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+
+    .search-input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .search-input::placeholder {
+      color: var(--gray-500);
+    }
+
+    .search-cancel {
+      font-size: 12px;
+      color: var(--gray-600);
+      white-space: nowrap;
+    }
+
+    .search-section {
+      padding: 16px 15px;
+    }
+
+    .search-section-title {
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .search-section-title span {
+      font-size: 10px;
+      color: var(--gray-500);
+      font-weight: 400;
+    }
+
+    .recent-searches {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .recent-tag {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      background: var(--gray-100);
+      border-radius: 16px;
+      font-size: 11px;
+    }
+
+    .recent-tag-remove {
+      width: 14px;
+      height: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gray-500);
+    }
+
+    .popular-list {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .popular-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--gray-100);
+    }
+
+    .popular-rank {
+      width: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--burgundy);
+    }
+
+    .popular-keyword {
+      flex: 1;
+      font-size: 13px;
+    }
+
+    .popular-trend {
+      font-size: 10px;
+      color: var(--success);
+    }
+
+    .popular-trend.down {
+      color: var(--error);
+    }
+
+    /* Reservation Status in MyPage */
+    .reservation-summary {
+      margin: 0 15px 16px;
+      padding: 14px;
+      background: var(--gray-100);
+      border-radius: 12px;
+    }
+
+    .reservation-summary-title {
+      font-size: 11px;
+      color: var(--gray-600);
+      margin-bottom: 10px;
+    }
+
+    .reservation-counts {
+      display: flex;
+      justify-content: space-around;
+    }
+
+    .reservation-count-item {
+      text-align: center;
+    }
+
+    .reservation-count-num {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--burgundy);
+    }
+
+    .reservation-count-label {
+      font-size: 9px;
+      color: var(--gray-600);
+      margin-top: 2px;
+    }
+
+    /* MyPage Menu */
+    .mypage-menu {
+      padding: 0 15px;
+    }
+
+    .mypage-menu-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--gray-100);
+    }
+
+    .mypage-menu-item span {
+      font-size: 13px;
+    }
+
+    /* Popup Overlay */
+    .popup-overlay {
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: flex-end;
+    }
+
+    .popup-content {
+      width: 100%;
+      background: var(--white);
+      border-radius: 20px 20px 0 0;
+      padding: 18px 15px 30px;
+    }
+
+    .popup-handle {
+      width: 32px;
+      height: 3px;
+      background: var(--gray-300);
+      border-radius: 2px;
+      margin: 0 auto 18px;
+    }
+
+    .popup-icon {
+      font-size: 38px;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .popup-title {
+      font-size: 16px;
+      font-weight: 700;
+      text-align: center;
+      line-height: 1.4;
+      margin-bottom: 6px;
+    }
+
+    .popup-desc {
+      font-size: 11px;
+      color: var(--gray-600);
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .popup-btn {
+      width: 100%;
+      padding: 12px;
+      background: var(--burgundy);
+      color: var(--white);
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .popup-link {
+      display: block;
+      text-align: center;
+      color: var(--gray-600);
+      font-size: 12px;
+      padding: 10px;
+    }
+
+    /* Image Slider Animation */
+    @keyframes slideImage {
+      0%, 45% { opacity: 1; }
+      50%, 95% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    .product-image-slider .slide:nth-child(1) {
+      animation: slideImage 4s infinite;
+    }
+
+    .product-image-slider .slide:nth-child(2) {
+      animation: slideImage 4s infinite;
+      animation-delay: 2s;
+    }
+
+    /* Date Picker Popup */
+    .date-picker-popup {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 260px;
+      background: var(--white);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    }
+
+    .calendar-mini-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .calendar-mini-month {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .calendar-mini-nav {
+      display: flex;
+      gap: 8px;
+    }
+
+    .calendar-mini-nav button {
+      width: 24px;
+      height: 24px;
+      border: none;
+      background: var(--gray-100);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .calendar-mini-days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 2px;
+      margin-bottom: 8px;
+    }
+
+    .calendar-mini-day {
+      text-align: center;
+      font-size: 9px;
+      font-weight: 500;
+      color: var(--gray-500);
+      padding: 4px 0;
+    }
+
+    .calendar-mini-dates {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 2px;
+    }
+
+    .calendar-mini-date {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      border-radius: 50%;
+    }
+
+    .calendar-mini-date.selected {
+      background: var(--burgundy);
+      color: var(--white);
+      font-weight: 600;
+    }
+
+    .calendar-mini-date.in-range {
+      background: #F8E0E6;
+    }
+
+    .calendar-mini-date.disabled {
+      color: var(--gray-300);
+    }
+
+    .calendar-mini-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .calendar-mini-actions button {
+      flex: 1;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      border: none;
+    }
+
+    .calendar-mini-actions .cancel {
+      background: var(--gray-100);
+      color: var(--gray-600);
+    }
+
+    .calendar-mini-actions .confirm {
+      background: var(--burgundy);
+      color: var(--white);
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🎩 리웨어스</h1>
+    <p>Flutter 앱 UI 디자인 프리뷰 v2 • 블랙/화이트 + 버건디</p>
+  </div>
+
+  <!-- 인증 플로우 -->
+  <div class="section">
+    <div class="section-title">01. 인증 플로우</div>
+    <div class="screens-row">
+      <!-- 스플래시 -->
+      <div class="screen-wrapper">
+        <div class="screen-label">스플래시</div>
+        <div class="phone-frame dark">
+          <div class="splash-content">
+            <div class="splash-logo">🎩</div>
+            <div class="splash-title">리웨어스</div>
+            <div class="splash-subtitle">REWEARS</div>
+            <div class="splash-loader">
+              <div class="splash-dot"></div>
+              <div class="splash-dot"></div>
+              <div class="splash-dot"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 로그인 팝업 -->
+      <div class="screen-wrapper">
+        <div class="screen-label">로그인 유도 팝업</div>
+        <div class="phone-frame">
+          <div class="popup-overlay">
+            <div class="popup-content">
+              <div class="popup-handle"></div>
+              <div class="popup-icon">🎩</div>
+              <div class="popup-title">예약을 진행하려면<br>로그인이 필요해요</div>
+              <div class="popup-desc">전화번호로 간편하게 시작하세요</div>
+              <button class="popup-btn">전화번호로 시작하기</button>
+              <a href="#" class="popup-link">나중에 할게요</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 메인 화면 -->
+  <div class="section">
+    <div class="section-title">02. 메인 화면 (업데이트)</div>
+    <div class="screens-row">
+      <!-- 홈 - 업데이트 -->
+      <div class="screen-wrapper">
+        <div class="screen-label">홈 (업데이트)</div>
+        <div class="phone-frame">
+          <div class="status-bar light">
+            <span>9:41</span>
+            <span>●●●●● ⚡ 100%</span>
+          </div>
+          <div class="app-header">
+            <div class="app-logo">
+              <span>🎩</span>
+              <span>리웨어스</span>
+            </div>
+            <div class="icon-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="banner">
+            <div>
+              <div class="banner-tag">NEW ARRIVAL</div>
+              <div class="banner-title">겨울 시즌<br>프리미엄 컬렉션</div>
+            </div>
+            <div class="banner-btn">자세히 보기</div>
+          </div>
+          <div class="categories">
+            <div class="category-item">
+              <div class="category-icon">👔</div>
+              <span class="category-label">상의</span>
+            </div>
+            <div class="category-item">
+              <div class="category-icon">👖</div>
+              <span class="category-label">하의</span>
+            </div>
+            <div class="category-item">
+              <div class="category-icon">🧥</div>
+              <span class="category-label">아우터</span>
+            </div>
+            <div class="category-item">
+              <div class="category-icon">👗</div>
+              <span class="category-label">세트</span>
+            </div>
+          </div>
+          <div class="section-header">
+            <h3>베스트 아이템</h3>
+            <span>전체보기</span>
+          </div>
+          <div class="products-scroll">
+            <!-- Product 1 -->
+            <div class="product-card">
+              <div class="product-image-slider">
+                <div class="best-badge">BEST</div>
+                <div class="stock-badge available">대여가능</div>
+                <div class="slide active">🖤</div>
+                <div class="slide">🧥</div>
+                <div class="slide-indicators">
+                  <div class="slide-dot active"></div>
+                  <div class="slide-dot"></div>
+                </div>
+              </div>
+              <div class="product-name">클래식 블랙 블레이저</div>
+              <div class="product-price-row">
+                <span class="discount-badge">20%</span>
+                <span class="product-price">12,000원<span>/1일</span></span>
+              </div>
+              <div class="product-original-price">15,000원</div>
+              <div class="product-provider">
+                <span class="provider-badge official">리웨어스</span>
+              </div>
+            </div>
+            <!-- Product 2 -->
+            <div class="product-card">
+              <div class="product-image-slider">
+                <div class="stock-badge rented">대여중</div>
+                <div class="slide active">❤️</div>
+                <div class="slide">👚</div>
+                <div class="slide-indicators">
+                  <div class="slide-dot active"></div>
+                  <div class="slide-dot"></div>
+                </div>
+              </div>
+              <div class="product-name">버건디 실크 블라우스</div>
+              <div class="product-price-row">
+                <span class="product-price">12,000원<span>/1일</span></span>
+              </div>
+              <div class="product-provider">
+                <span class="provider-badge user">개인</span>
+                <span>fashionista_kim</span>
+              </div>
+            </div>
+            <!-- Product 3 -->
+            <div class="product-card">
+              <div class="product-image-slider">
+                <div class="stock-badge soon">12/18 반납</div>
+                <div class="slide active">💙</div>
+                <div class="slide">🧥</div>
+                <div class="slide-indicators">
+                  <div class="slide-dot active"></div>
+                  <div class="slide-dot"></div>
+                </div>
+              </div>
+              <div class="product-name">네이비 울 코트</div>
+              <div class="product-price-row">
+                <span class="discount-badge">15%</span>
+                <span class="product-price">21,250원<span>/1일</span></span>
+              </div>
+              <div class="product-original-price">25,000원</div>
+              <div class="product-provider">
+                <span class="provider-badge official">리웨어스</span>
+              </div>
+            </div>
+          </div>
+          <!-- Updated Bottom Navigation -->
+          <div class="bottom-nav">
+            <div class="nav-item active">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              </svg>
+              <span class="nav-label">홈</span>
+              <div class="nav-dot"></div>
+            </div>
+            <div class="nav-item">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+              </svg>
+              <span class="nav-label">카테고리</span>
+            </div>
+            <div class="nav-item">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <span class="nav-label">검색</span>
+            </div>
+            <div class="nav-item">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              <span class="nav-label">마이</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 카테고리/상품 목록 - 업데이트 -->
+      <div class="screen-wrapper">
+        <div class="screen-label">카테고리 (업데이트)</div>
+        <div class="phone-frame">
+          <div class="status-bar light">
+            <span>9:41</span>
+            <span>●●●●● ⚡ 100%</span>
+          </div>
+          <div class="detail-header">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12,19 5,12 12,5"></polyline>
+            </svg>
+            <span class="detail-header-title">상의</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </div>
+          
+          <!-- Date Filter -->
+          <div class="filter-section">
+            <div class="date-filter">
+              <svg class="date-filter-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              <span class="date-filter-text">대여 희망일</span>
+              <span class="date-filter-value">12/20 - 12/22</span>
+              <div class="date-filter-clear">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </div>
+            </div>
+            <div class="availability-toggle">
+              <span class="toggle-label">대여 가능한 상품만 보기</span>
+              <div class="toggle-switch active"></div>
+            </div>
+          </div>
+
+          <div class="filter-tabs">
+            <span class="filter-tab active">전체</span>
+            <span class="filter-tab">블라우스</span>
+            <span class="filter-tab">셔츠</span>
+            <span class="filter-tab">니트</span>
+            <span class="filter-tab">티셔츠</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding: 0 15px 8px;">
+            <span style="font-size: 10px; color: var(--gray-600);">총 18개</span>
+            <span style="font-size: 10px; color: var(--gray-600);">인기순 ▼</span>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 15px; overflow-y: auto; max-height: 280px;">
+            <div class="product-card">
+              <div class="product-image-slider" style="width: 100%; height: 130px;">
+                <div class="best-badge">BEST</div>
+                <div class="stock-badge available">대여가능</div>
+                <div class="slide active">🖤</div>
+                <div class="slide">🧥</div>
+              </div>
+              <div class="product-name">클래식 블랙 블레이저</div>
+              <div class="product-price-row">
+                <span class="discount-badge">20%</span>
+                <span class="product-price">12,000원<span>/1일</span></span>
+              </div>
+              <div class="product-provider">
+                <span class="provider-badge official">리웨어스</span>
+              </div>
+            </div>
+            <div class="product-card">
+              <div class="product-image-slider" style="width: 100%; height: 130px;">
+                <div class="stock-badge available">대여가능</div>
+                <div class="slide active">🤍</div>
+                <div class="slide">👚</div>
+              </div>
+              <div class="product-name">화이트 리넨 셔츠</div>
+              <div class="product-price-row">
+                <span class="product-price">10,000원<span>/1일</span></span>
+              </div>
+              <div class="product-provider">
+                <span class="provider-badge user">개인</span>
+                <span>style_queen</span>
+              </div>
+            </div>
+            <div class="product-card">
+              <div class="product-image-slider" style="width: 100%; height: 130px;">
+                <div class="stock-badge available">대여가능</div>
+                <div class="slide active">💚</div>
+                <div class="slide">🧶</div>
+              </div>
+              <div class="product-name">올리브 니트 가디건</div>
+              <div class="product-price-row">
+                <span class="discount-badge">10%</span>
+                <span class="product-price">12,600원<span>/1일</span></span>
+              </div>
+              <div class="product-provider">
+                <span class="provider-badge official">리웨어스</span>
+              </div>
+            </div>
+            <div class="product-card">
+              <div class="product-image-slider" style="width: 100%; height: 130px;">
+                <div class="stock-badge available">대여가능</div>
+                <div class="slide active">💜</div>
+                <div class="slide">👕</div>
+              </div>
+              <div class="product-name">라벤더 캐시미어</div>
+              <div class="product-price-row">
+                <span class="product-price">18,000원<span>/1일</span></span>
+              </div>
+              <div class="product-provider">
+                <span class="provider-badge official">리웨어스</span>
+              </div>
+            </div>
+          </div>
+          <!-- Updated Bottom Navigation -->
+          <div class="bottom-nav">
+            <div class="nav-item">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              </svg>
+              <span class="nav-label">홈</span>
+            </div>
+            <div class="nav-item active">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+              </svg>
+              <span class="nav-label">카테고리</span>
+              <div class="nav-dot"></div>
+            </div>
+            <div class="nav-item">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <span class="nav-label">검색</span>
+            </div>
+            <div class="nav-item">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              <span class="nav-label">마이</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 카테고리 - 날짜 선택 팝업 -->
+      <div class="screen-wrapper">
+        <div class="screen-label">날짜 필터 선택</div>
+        <div class="phone-frame">
+          <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5);">
+            <div class="date-picker-popup">
+              <div class="calendar-mini-header">
+                <div class="calendar-mini-month">2025년 12월</div>
+                <div class="calendar-mini-nav">
+                  <button>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
+                      <polyline points="15,18 9,12 15,6"></polyline>
+                    </svg>
+                  </button>
+                  <button>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
+                      <polyline points="9,18 15,12 9,6"></polyline>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div class="calendar-mini-days">
+                <span class="calendar-mini-day" style="color: #D32F2F;">일</span>
+                <span class="calendar-mini-day">월</span>
+                <span class="calendar-mini-day">화</span>
+                <span class="calendar-mini-day">수</span>
+                <span class="calendar-mini-day">목</span>
+                <span class="calendar-mini-day">금</span>
+                <span class="calendar-mini-day" style="color: #2196F3;">토</span>
+              </div>
+              <div class="calendar-mini-dates">
+                <span class="calendar-mini-date"></span>
+                <span class="calendar-mini-date">1</span>
+                <span class="calendar-mini-date">2</span>
+                <span class="calendar-mini-date">3</span>
+                <span class="calendar-mini-date">4</span>
+                <span class="calendar-mini-date">5</span>
+                <span class="calendar-mini-date">6</span>
+                <span class="calendar-mini-date">7</span>
+                <span class="calendar-mini-date">8</span>
+                <span class="calendar-mini-date">9</span>
+                <span class="calendar-mini-date">10</span>
+                <span class="calendar-mini-date">11</span>
+                <span class="calendar-mini-date">12</span>
+                <span class="calendar-mini-date">13</span>
+                <span class="calendar-mini-date">14</span>
+                <span class="calendar-mini-date">15</span>
+                <span class="calendar-mini-date">16</span>
+                <span class="calendar-mini-date">17</span>
+                <span class="calendar-mini-date">18</span>
+                <span class="calendar-mini-date">19</span>
+                <span class="calendar-mini-date selected">20</span>
+                <span class="calendar-mini-date in-range">21</span>
+                <span class="calendar-mini-date selected">22</span>
+                <span class="calendar-mini-date">23</span>
+                <span class="calendar-mini-date">24</span>
+                <span class="calendar-mini-date">25</span>
+                <span class="calendar-mini-date">26</span>
+                <span class="calendar-mini-date">27</span>
+                <span class="calendar-mini-date">28</span>
+                <span class="calendar-mini-date">29</span>
+                <span class="calendar-mini-date">30</span>
+                <span class="calendar-mini-date">31</span>
+              </div>
+              <div style="margin-top: 12px; padding: 10px; background: var(--gray-100); border-radius: 8px;">
+                <div style="font-size: 10px; color: var(--gray-600); margin-bottom: 4px;">선택한 기간</div>
+                <div style="font-size: 12px; font-weight: 600;">12월 20일 (토) ~ 12월 22일 (월)</div>
+                <div style="font-size: 10px; color: var(--burgundy);">3일간</div>
+              </div>
+              <div class="calendar-mini-actions">
+                <button class="cancel">취소</button>
+                <button class="confirm">적용하기</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 검색 화면 -->
+      <div class="screen-wrapper">
+        <div class="screen-label">검색</div>
+        <div class="phone-frame">
+          <div class="status-bar light">
+            <span>9:41</span>
+            <span>●●●●● ⚡ 100%</span>
+          </div>
+          <div class="search-header">
+            <div class="search-input-wrapper">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input type="text" class="search-input" placeholder="상품명, 브랜드, 스타일 검색">
+            </div>
+            <span class="search-cancel">취소</span>
+          </div>
+          
+          <div class="search-section">
+            <div class="search-section-title">
+              최근 검색어
+              <span>전체 삭제</span>
+            </div>
+            <div class="recent-searches">
+              <div class="recent-tag">
+                블랙 블레이저
+                <div class="recent-tag-remove">×</div>
+              </div>
+              <div class="recent-tag">
+                울 코트
+                <div class="recent-tag-remove">×</div>
+              </div>
+              <div class="recent-tag">
+                실크 블라우스
+                <div class="recent-tag-remove">×</div>
+              </div>
+              <div class="recent-tag">
+                캐시미어
+                <div class="recent-tag-remove">×</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="search-section">
+            <div class="search-section-title">인기 검색어</div>
+            <div class="popular-list">
+              <div class="popular-item">
+                <span class="popular-rank">1</span>
+                <span class="popular-keyword">겨울 코트</span>
+                <span class="popular-trend">▲ 5</span>
+              </div>
+              <div class="popular-item">
+                <span class="popular-rank">2</span>
+                <span class="popular-keyword">크리스마스 드레스</span>
+                <span class="popular-trend">NEW</span>
+              </div>
+              <div class="popular-item">
+                <span class="popular-rank">3</span>
+                <span class="popular-keyword">블랙 블레이저</span>
+                <span class="popular-trend down">▼ 2</span>
+              </div>
+              <div class="popular-item">
+                <span class="popular-rank">4</span>
+                <span class="popular-keyword">캐시미어 니트</span>
+                <span class="popular-trend">▲ 1</span>
+              </div>
+              <div class="popular-item">
+                <span class="popular-rank">5</span>
+                <span class="popular-keyword">파티룩 세트</span>
+                <span class="popular-trend">NEW</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Updated Bottom Navigation -->
+          <div class="bottom-nav">
+            <div class="nav-item">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              </svg>
+              <span class="nav-label">홈</span>
+            </div>
+            <div class="nav-item">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+              </svg>
+              <span class="nav-label">카테고리</span>
+            </div>
+            <div class="nav-item active">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <span class="nav-label">검색</span>
+              <div class="nav-dot"></div>
+            </div>
+            <div class="nav-item">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              <span class="nav-label">마이</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 검색 결과 화면 -->
+      <div class="screen-wrapper">
+        <div class="screen-label">검색 결과</div>
+        <div class="phone-frame">
+          <div class="status-bar light">
+            <span>9:41</span>
+            <span>●●●●● ⚡ 100%</span>
+          </div>
+          <div class="search-header">
+            <div class="search-input-wrapper">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input type="text" class="search-input" value="블랙 블레이저">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="15" y1="9" x2="9" y2="15"></line>
+                <line x1="9" y1="9" x2="15" y2="15"></line>
+              </svg>
+            </div>
+            <span class="search-cancel">취소</span>
+          </div>
+          
+          <div class="filter-tabs" style="margin-top: 8px;">
+            <span class="filter-tab active">전체 (12)</span>
+            <span class="filter-tab">상의 (8)</span>
+            <span class="filter-tab">아우터 (4)</span>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; padding: 8px 15px;">
+            <span style="font-size: 10px; color: var(--gray-600);">'블랙 블레이저' 검색결과 12개</span>
+            <span style="font-size: 10px; color: var(--gray-600);">정확도순 ▼</span>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 15px; overflow-y: auto; max-height: 340px;">
+            <div class="product-card">
+              <div class="product-image-slider" style="width: 100%; height: 130px;">
+                <div class="best-badge">BEST</div>
+                <div class="stock-badge available">대여가능</div>
+                <div class="slide active">🖤</div>
+              </div>
+              <div class="product-name">클래식 블랙 블레이저</div>
+              <div class="product-price-row">
+                <span class="discount-badge">20%</span>
+                <span class="product-price">12,000원<span>/1일</span></span>
+              </div>
+              <div class="product-provider">
+                <span class="provider-badge official">리웨어스</span>
+              </div>
+            </div>
+            <div class="product-card">
+              <div class="product-image-slider" style="width: 100%; height: 130px;">
+                <div class="stock-badge available">대여가능</div>
+                <div class="slide active">🖤</div>
+              </div>
+              <div class="product-name">슬림핏 블랙 블레이저</div>
+              <div class="product-price-row">
+                <span class="product-price">14,000원<span>/1일</span></span>
+              </div>
+              <div class="product-provider">
+                <span class="provider-badge user">개인</span>
+                <span>black_lover</span>
+              </div>
+            </div>
+            <div class="product-card">
+              <div class="product-image-slider" style="width: 100%; height: 130px;">
+                <div class="stock-badge soon">12/25 반납</div>
+                <div class="slide active">🖤</div>
+              </div>
+              <div class="product-name">오버핏 블랙 블레이저</div>
+              <div class="product-price-row">
+                <span class="product-price">16,000원<span>/1일</span></span>
+              </div>
+              <div class="product-provider">
+                <span class="provider-badge official">리웨어스</span>
+              </div>
+            </div>
+            <div class="product-card">
+              <div class="product-image-slider" style="width: 100%; height: 130px;">
+                <div class="stock-badge rented">대여중</div>
+                <div class="slide active">🖤</div>
+              </div>
+              <div class="product-name">더블버튼 블랙 블레이저</div>
+              <div class="product-price-row">
+                <span class="discount-badge">15%</span>
+                <span class="product-price">13,600원<span>/1일</span></span>
+              </div>
+              <div class="product-provider">
+                <span class="provider-badge official">리웨어스</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Updated Bottom Navigation -->
+          <div class="bottom-nav">
+            <div class="nav-item">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              </svg>
+              <span class="nav-label">홈</span>
+            </div>
+            <div class="nav-item">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+              </svg>
+              <span class="nav-label">카테고리</span>
+            </div>
+            <div class="nav-item active">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <span class="nav-label">검색</span>
+              <div class="nav-dot"></div>
+            </div>
+            <div class="nav-item">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              <span class="nav-label">마이</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 마이페이지 - 업데이트 -->
+      <div class="screen-wrapper">
+        <div class="screen-label">마이페이지 (업데이트)</div>
+        <div class="phone-frame">
+          <div class="status-bar light">
+            <span>9:41</span>
+            <span>●●●●● ⚡ 100%</span>
+          </div>
+          <div style="padding: 20px 15px 12px;">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+              <div style="width: 56px; height: 56px; background: var(--gray-100); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px;">👤</div>
+              <div>
+                <div style="font-size: 16px; font-weight: 700;">홍길동님</div>
+                <div style="font-size: 11px; color: var(--gray-600);">010-****-5678 · 사이즈 M</div>
+              </div>
+              <div style="margin-left: auto;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2">
+                  <polyline points="9,18 15,12 9,6"></polyline>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Reservation Summary -->
+          <div class="reservation-summary">
+            <div class="reservation-summary-title">내 예약 현황</div>
+            <div class="reservation-counts">
+              <div class="reservation-count-item">
+                <div class="reservation-count-num">1</div>
+                <div class="reservation-count-label">입금대기</div>
+              </div>
+              <div class="reservation-count-item">
+                <div class="reservation-count-num">2</div>
+                <div class="reservation-count-label">예약확정</div>
+              </div>
+              <div class="reservation-count-item">
+                <div class="reservation-count-num">1</div>
+                <div class="reservation-count-label">대여중</div>
+              </div>
+              <div class="reservation-count-item">
+                <div class="reservation-count-num">5</div>
+                <div class="reservation-count-label">이용완료</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mypage-menu">
+            <div class="mypage-menu-item">
+              <span>📋 예약 내역</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2">
+                <polyline points="9,18 15,12 9,6"></polyline>
+              </svg>
+            </div>
+            <div class="mypage-menu-item">
+              <span>❤️ 찜한 상품</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2">
+                <polyline points="9,18 15,12 9,6"></polyline>
+              </svg>
+            </div>
+            <div class="mypage-menu-item">
+              <span>📢 공지사항</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2">
+                <polyline points="9,18 15,12 9,6"></polyline>
+              </svg>
+            </div>
+            <div class="mypage-menu-item">
+              <span>💬 고객센터</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2">
+                <polyline points="9,18 15,12 9,6"></polyline>
+              </svg>
+            </div>
+            <div class="mypage-menu-item">
+              <span>📄 이용약관</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2">
+                <polyline points="9,18 15,12 9,6"></polyline>
+              </svg>
+            </div>
+            <div class="mypage-menu-item" style="color: var(--gray-500);">
+              <span>🚪 로그아웃</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2">
+                <polyline points="9,18 15,12 9,6"></polyline>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Updated Bottom Navigation -->
+          <div class="bottom-nav">
+            <div class="nav-item">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              </svg>
+              <span class="nav-label">홈</span>
+            </div>
+            <div class="nav-item">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+              </svg>
+              <span class="nav-label">카테고리</span>
+            </div>
+            <div class="nav-item">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <span class="nav-label">검색</span>
+            </div>
+            <div class="nav-item active">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              <span class="nav-label">마이</span>
+              <div class="nav-dot"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align: center; padding: 40px; color: var(--gray-500); font-size: 12px;">
+    <p>리웨어스 앱 UI 디자인 v2 • 2025.12.01</p>
+    <p style="margin-top: 8px;">블랙/화이트 기반 + 버건디(#800020) 포인트 컬러</p>
+    <p style="margin-top: 8px; color: var(--burgundy);">업데이트: 홈화면 상품카드, 카테고리 필터, 검색화면, 하단앱바</p>
+  </div>
+</body>
+</html>

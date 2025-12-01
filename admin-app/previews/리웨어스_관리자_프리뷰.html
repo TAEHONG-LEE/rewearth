@@ -1,0 +1,2126 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>리웨어스 관리자 UI 프리뷰</title>
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+  <style>
+    :root {
+      --black: #000000;
+      --white: #FFFFFF;
+      --burgundy: #800020;
+      --burgundy-light: #9A2540;
+      --gray-50: #FAFAFA;
+      --gray-100: #F5F5F5;
+      --gray-200: #E5E5E5;
+      --gray-300: #CCCCCC;
+      --gray-500: #999999;
+      --gray-600: #666666;
+      --gray-700: #444444;
+      --success: #388E3C;
+      --success-light: #E8F5E9;
+      --warning: #FF9800;
+      --warning-light: #FFF3E0;
+      --error: #D32F2F;
+      --error-light: #FFEBEE;
+      --info: #1976D2;
+      --info-light: #E3F2FD;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0d0d0d 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .header h1 {
+      color: var(--white);
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .header p {
+      color: var(--gray-500);
+      font-size: 14px;
+    }
+
+    .section {
+      margin-bottom: 60px;
+    }
+
+    .section-title {
+      color: var(--burgundy);
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      margin-bottom: 16px;
+      padding-left: 20px;
+    }
+
+    .screens-row {
+      display: flex;
+      gap: 24px;
+      overflow-x: auto;
+      padding: 20px;
+      scroll-behavior: smooth;
+    }
+
+    .screens-row::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    .screens-row::-webkit-scrollbar-track {
+      background: #333;
+      border-radius: 4px;
+    }
+
+    .screens-row::-webkit-scrollbar-thumb {
+      background: var(--burgundy);
+      border-radius: 4px;
+    }
+
+    .screen-wrapper {
+      flex-shrink: 0;
+    }
+
+    .screen-label {
+      color: var(--gray-500);
+      font-size: 12px;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    /* Admin Frame - Desktop Style */
+    .admin-frame {
+      width: 900px;
+      height: 600px;
+      background: var(--gray-100);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 25px 80px rgba(0,0,0,0.4);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .admin-frame.login {
+      width: 400px;
+      background: var(--black);
+    }
+
+    /* Browser Chrome */
+    .browser-chrome {
+      height: 32px;
+      background: var(--gray-200);
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      gap: 8px;
+    }
+
+    .browser-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .browser-dot.red { background: #FF5F57; }
+    .browser-dot.yellow { background: #FFBD2E; }
+    .browser-dot.green { background: #28CA41; }
+
+    .browser-url {
+      flex: 1;
+      height: 20px;
+      background: var(--white);
+      border-radius: 4px;
+      margin-left: 12px;
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+      font-size: 10px;
+      color: var(--gray-600);
+    }
+
+    /* Admin Layout */
+    .admin-layout {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 200px;
+      background: var(--black);
+      color: var(--white);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-logo {
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid var(--gray-700);
+    }
+
+    .sidebar-logo span:first-child {
+      font-size: 24px;
+    }
+
+    .sidebar-logo span:last-child {
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .sidebar-logo small {
+      font-size: 9px;
+      color: var(--burgundy);
+      font-weight: 600;
+    }
+
+    .sidebar-menu {
+      flex: 1;
+      padding: 12px 0;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      color: var(--gray-500);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .menu-item:hover {
+      background: rgba(255,255,255,0.05);
+      color: var(--white);
+    }
+
+    .menu-item.active {
+      background: rgba(128, 0, 32, 0.2);
+      color: var(--white);
+      border-left: 3px solid var(--burgundy);
+    }
+
+    .menu-item svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .sidebar-footer {
+      padding: 12px 16px;
+      border-top: 1px solid var(--gray-700);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .admin-avatar {
+      width: 32px;
+      height: 32px;
+      background: var(--burgundy);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+
+    .admin-info {
+      flex: 1;
+    }
+
+    .admin-name {
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .admin-role {
+      font-size: 9px;
+      color: var(--gray-500);
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: var(--gray-50);
+      overflow: hidden;
+    }
+
+    .top-header {
+      height: 50px;
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-200);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+    }
+
+    .page-title {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .notification-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: var(--gray-100);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .notification-badge {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      width: 16px;
+      height: 16px;
+      background: var(--burgundy);
+      color: var(--white);
+      font-size: 9px;
+      font-weight: 700;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .content-area {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    /* Dashboard Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .stat-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .stat-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .stat-icon.blue { background: var(--info-light); }
+    .stat-icon.green { background: var(--success-light); }
+    .stat-icon.burgundy { background: rgba(128, 0, 32, 0.1); }
+    .stat-icon.black { background: var(--gray-100); }
+
+    .stat-change {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 10px;
+    }
+
+    .stat-change.up {
+      background: var(--success-light);
+      color: var(--success);
+    }
+
+    .stat-change.down {
+      background: var(--error-light);
+      color: var(--error);
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--gray-600);
+    }
+
+    /* Dashboard Grid */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--white);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .card-header {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--gray-100);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .card-action {
+      font-size: 10px;
+      color: var(--burgundy);
+      cursor: pointer;
+    }
+
+    .card-body {
+      padding: 16px;
+    }
+
+    /* Chart Placeholder */
+    .chart-placeholder {
+      height: 180px;
+      background: linear-gradient(180deg, var(--gray-50) 0%, var(--white) 100%);
+      border-radius: 8px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-around;
+      padding: 16px;
+    }
+
+    .chart-bar {
+      width: 32px;
+      background: linear-gradient(180deg, var(--burgundy) 0%, var(--burgundy-light) 100%);
+      border-radius: 4px 4px 0 0;
+    }
+
+    /* Activity List */
+    .activity-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--gray-100);
+    }
+
+    .activity-item:last-child {
+      border-bottom: none;
+    }
+
+    .activity-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+
+    .activity-content {
+      flex: 1;
+    }
+
+    .activity-text {
+      font-size: 11px;
+      margin-bottom: 2px;
+    }
+
+    .activity-time {
+      font-size: 9px;
+      color: var(--gray-500);
+    }
+
+    /* Quick Actions */
+    .quick-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .quick-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      background: var(--gray-50);
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .quick-btn:hover {
+      background: var(--gray-100);
+    }
+
+    .quick-btn-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+
+    /* Table Styles */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .data-table th {
+      text-align: left;
+      padding: 10px 12px;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--gray-600);
+      background: var(--gray-50);
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    .data-table td {
+      padding: 12px;
+      font-size: 11px;
+      border-bottom: 1px solid var(--gray-100);
+      vertical-align: middle;
+    }
+
+    .data-table tr:hover {
+      background: var(--gray-50);
+    }
+
+    .product-cell {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .product-thumb {
+      width: 36px;
+      height: 36px;
+      background: var(--gray-100);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .product-name {
+      font-weight: 500;
+    }
+
+    /* Status Badge */
+    .status-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 9px;
+      font-weight: 600;
+    }
+
+    .status-badge.available {
+      background: var(--success-light);
+      color: var(--success);
+    }
+
+    .status-badge.renting {
+      background: rgba(128, 0, 32, 0.1);
+      color: var(--burgundy);
+    }
+
+    .status-badge.reserved {
+      background: var(--info-light);
+      color: var(--info);
+    }
+
+    .status-badge.pending {
+      background: var(--warning-light);
+      color: var(--warning);
+    }
+
+    .status-badge.confirmed {
+      background: var(--success-light);
+      color: var(--success);
+    }
+
+    .status-badge.cancelled {
+      background: var(--error-light);
+      color: var(--error);
+    }
+
+    .status-badge.completed {
+      background: var(--gray-100);
+      color: var(--gray-600);
+    }
+
+    /* Action Buttons */
+    .action-btns {
+      display: flex;
+      gap: 6px;
+    }
+
+    .action-btn {
+      width: 26px;
+      height: 26px;
+      border-radius: 4px;
+      border: 1px solid var(--gray-200);
+      background: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .action-btn:hover {
+      background: var(--gray-100);
+    }
+
+    .action-btn svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    /* Top Bar Actions */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      width: 240px;
+    }
+
+    .search-box input {
+      border: none;
+      outline: none;
+      font-size: 11px;
+      flex: 1;
+    }
+
+    .filter-tabs {
+      display: flex;
+      gap: 6px;
+    }
+
+    .filter-tab {
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 500;
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      cursor: pointer;
+    }
+
+    .filter-tab.active {
+      background: var(--black);
+      color: var(--white);
+      border-color: var(--black);
+    }
+
+    .primary-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      background: var(--burgundy);
+      color: var(--white);
+      border: none;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Login Screen */
+    .login-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+    }
+
+    .login-logo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+
+    .login-logo span:first-child {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+
+    .login-logo-text {
+      color: var(--white);
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .login-logo-sub {
+      color: var(--burgundy);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      margin-top: 4px;
+    }
+
+    .login-form {
+      width: 100%;
+    }
+
+    .login-input-group {
+      margin-bottom: 14px;
+    }
+
+    .login-label {
+      display: block;
+      color: var(--gray-500);
+      font-size: 10px;
+      margin-bottom: 6px;
+    }
+
+    .login-input {
+      width: 100%;
+      padding: 12px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--gray-700);
+      border-radius: 8px;
+      color: var(--white);
+      font-size: 13px;
+      outline: none;
+    }
+
+    .login-input:focus {
+      border-color: var(--burgundy);
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--burgundy);
+      color: var(--white);
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-top: 8px;
+      cursor: pointer;
+    }
+
+    .login-forgot {
+      text-align: center;
+      margin-top: 16px;
+    }
+
+    .login-forgot a {
+      color: var(--gray-500);
+      font-size: 11px;
+      text-decoration: none;
+    }
+
+    /* Detail View */
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .info-section {
+      margin-bottom: 16px;
+    }
+
+    .info-section-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--gray-600);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .info-row {
+      display: flex;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--gray-100);
+    }
+
+    .info-label {
+      width: 80px;
+      font-size: 10px;
+      color: var(--gray-500);
+    }
+
+    .info-value {
+      flex: 1;
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    /* Progress Steps */
+    .progress-steps {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding: 16px;
+      background: var(--gray-50);
+      border-radius: 8px;
+    }
+
+    .progress-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .progress-dot {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--gray-200);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: var(--gray-500);
+    }
+
+    .progress-dot.completed {
+      background: var(--success);
+      color: var(--white);
+    }
+
+    .progress-dot.current {
+      background: var(--burgundy);
+      color: var(--white);
+    }
+
+    .progress-label {
+      font-size: 9px;
+      color: var(--gray-500);
+    }
+
+    .progress-label.active {
+      color: var(--black);
+      font-weight: 600;
+    }
+
+    .progress-line {
+      flex: 1;
+      height: 2px;
+      background: var(--gray-200);
+      margin: 0 8px;
+    }
+
+    .progress-line.completed {
+      background: var(--success);
+    }
+
+    /* Action Buttons Row */
+    .action-row {
+      display: flex;
+      gap: 10px;
+      padding-top: 16px;
+      border-top: 1px solid var(--gray-200);
+    }
+
+    .btn {
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--burgundy);
+      color: var(--white);
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: var(--white);
+    }
+
+    .btn-danger {
+      background: var(--error);
+      color: var(--white);
+    }
+
+    .btn-outline {
+      background: var(--white);
+      border: 1px solid var(--gray-300);
+      color: var(--gray-600);
+    }
+
+    footer {
+      text-align: center;
+      padding: 40px;
+      color: var(--gray-500);
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🎩 리웨어스 관리자</h1>
+    <p>관리자 웹 UI 프리뷰 • 블랙/화이트 + 버건디</p>
+  </div>
+
+  <!-- 로그인 화면 -->
+  <div class="section">
+    <div class="section-title">01. 로그인</div>
+    <div class="screens-row">
+      <div class="screen-wrapper">
+        <div class="screen-label">관리자 로그인</div>
+        <div class="admin-frame login">
+          <div class="browser-chrome">
+            <div class="browser-dot red"></div>
+            <div class="browser-dot yellow"></div>
+            <div class="browser-dot green"></div>
+            <div class="browser-url">🔒 admin.rewears.kr/login</div>
+          </div>
+          <div class="login-content">
+            <div class="login-logo">
+              <span>🎩</span>
+              <div class="login-logo-text">리웨어스</div>
+              <div class="login-logo-sub">ADMIN</div>
+            </div>
+            <div class="login-form">
+              <div class="login-input-group">
+                <label class="login-label">이메일</label>
+                <input type="email" class="login-input" placeholder="admin@rewears.kr" value="admin@rewears.kr">
+              </div>
+              <div class="login-input-group">
+                <label class="login-label">비밀번호</label>
+                <input type="password" class="login-input" placeholder="••••••••" value="••••••••">
+              </div>
+              <button class="login-btn">로그인</button>
+              <div class="login-forgot">
+                <a href="#">비밀번호를 잊으셨나요?</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 대시보드 -->
+  <div class="section">
+    <div class="section-title">02. 대시보드</div>
+    <div class="screens-row">
+      <div class="screen-wrapper">
+        <div class="screen-label">대시보드 메인</div>
+        <div class="admin-frame">
+          <div class="browser-chrome">
+            <div class="browser-dot red"></div>
+            <div class="browser-dot yellow"></div>
+            <div class="browser-dot green"></div>
+            <div class="browser-url">🔒 admin.rewears.kr/dashboard</div>
+          </div>
+          <div class="admin-layout">
+            <!-- Sidebar -->
+            <div class="sidebar">
+              <div class="sidebar-logo">
+                <span>🎩</span>
+                <div>
+                  <span>리웨어스</span>
+                  <small>ADMIN</small>
+                </div>
+              </div>
+              <div class="sidebar-menu">
+                <div class="menu-item active">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                  </svg>
+                  대시보드
+                </div>
+                <div class="menu-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                  </svg>
+                  상품 관리
+                </div>
+                <div class="menu-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                  </svg>
+                  예약 관리
+                </div>
+                <div class="menu-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                  픽업 위치
+                </div>
+                <div class="menu-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                  </svg>
+                  고객 관리
+                </div>
+                <div class="menu-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                  </svg>
+                  설정
+                </div>
+              </div>
+              <div class="sidebar-footer">
+                <div class="admin-avatar">👤</div>
+                <div class="admin-info">
+                  <div class="admin-name">김관리</div>
+                  <div class="admin-role">슈퍼관리자</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="main-content">
+              <div class="top-header">
+                <div class="page-title">대시보드</div>
+                <div class="header-actions">
+                  <div class="notification-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                      <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    <span class="notification-badge">3</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="content-area">
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                  <div class="stat-card">
+                    <div class="stat-card-header">
+                      <div class="stat-icon blue">📦</div>
+                      <span class="stat-change up">+2</span>
+                    </div>
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">오늘 픽업 예정</div>
+                  </div>
+                  <div class="stat-card">
+                    <div class="stat-card-header">
+                      <div class="stat-icon green">✅</div>
+                      <span class="stat-change up">+1</span>
+                    </div>
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">오늘 반납 예정</div>
+                  </div>
+                  <div class="stat-card">
+                    <div class="stat-card-header">
+                      <div class="stat-icon burgundy">⏳</div>
+                    </div>
+                    <div class="stat-value" style="color: var(--burgundy);">8</div>
+                    <div class="stat-label">승인 대기 예약</div>
+                  </div>
+                  <div class="stat-card">
+                    <div class="stat-card-header">
+                      <div class="stat-icon black">👔</div>
+                    </div>
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">현재 대여 중</div>
+                  </div>
+                </div>
+
+                <!-- Dashboard Grid -->
+                <div class="dashboard-grid">
+                  <!-- Chart -->
+                  <div class="card">
+                    <div class="card-header">
+                      <span class="card-title">📊 주간 예약 현황</span>
+                      <span class="card-action">상세보기 →</span>
+                    </div>
+                    <div class="card-body">
+                      <div class="chart-placeholder">
+                        <div class="chart-bar" style="height: 60%;"></div>
+                        <div class="chart-bar" style="height: 80%;"></div>
+                        <div class="chart-bar" style="height: 45%;"></div>
+                        <div class="chart-bar" style="height: 90%;"></div>
+                        <div class="chart-bar" style="height: 70%;"></div>
+                        <div class="chart-bar" style="height: 55%;"></div>
+                        <div class="chart-bar" style="height: 85%;"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Quick Actions & Activity -->
+                  <div style="display: flex; flex-direction: column; gap: 16px;">
+                    <div class="card">
+                      <div class="card-header">
+                        <span class="card-title">⚡ 빠른 액션</span>
+                      </div>
+                      <div class="card-body">
+                        <div class="quick-actions">
+                          <div class="quick-btn">
+                            <div class="quick-btn-icon" style="background: rgba(128, 0, 32, 0.1);">➕</div>
+                            상품 등록
+                          </div>
+                          <div class="quick-btn">
+                            <div class="quick-btn-icon" style="background: var(--warning-light);">📋</div>
+                            대기 예약 (8)
+                          </div>
+                          <div class="quick-btn">
+                            <div class="quick-btn-icon" style="background: var(--info-light);">📅</div>
+                            오늘 일정
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="card" style="flex: 1;">
+                      <div class="card-header">
+                        <span class="card-title">🕐 최근 활동</span>
+                        <span class="card-action">전체보기 →</span>
+                      </div>
+                      <div class="card-body">
+                        <div class="activity-item">
+                          <div class="activity-icon" style="background: var(--success-light);">✅</div>
+                          <div class="activity-content">
+                            <div class="activity-text"><strong>RW-1215-001</strong> 예약 승인됨</div>
+                            <div class="activity-time">2분 전</div>
+                          </div>
+                        </div>
+                        <div class="activity-item">
+                          <div class="activity-icon" style="background: var(--info-light);">📦</div>
+                          <div class="activity-content">
+                            <div class="activity-text"><strong>클래식 블랙 블레이저</strong> 픽업 완료</div>
+                            <div class="activity-time">15분 전</div>
+                          </div>
+                        </div>
+                        <div class="activity-item">
+                          <div class="activity-icon" style="background: var(--warning-light);">💰</div>
+                          <div class="activity-content">
+                            <div class="activity-text">새 예약 접수 (입금 대기)</div>
+                            <div class="activity-time">32분 전</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 상품 관리 -->
+  <div class="section">
+    <div class="section-title">03. 상품 관리</div>
+    <div class="screens-row">
+      <!-- 상품 목록 -->
+      <div class="screen-wrapper">
+        <div class="screen-label">상품 목록</div>
+        <div class="admin-frame">
+          <div class="browser-chrome">
+            <div class="browser-dot red"></div>
+            <div class="browser-dot yellow"></div>
+            <div class="browser-dot green"></div>
+            <div class="browser-url">🔒 admin.rewears.kr/products</div>
+          </div>
+          <div class="admin-layout">
+            <!-- Sidebar (생략) -->
+            <div class="sidebar">
+              <div class="sidebar-logo">
+                <span>🎩</span>
+                <div>
+                  <span>리웨어스</span>
+                  <small>ADMIN</small>
+                </div>
+              </div>
+              <div class="sidebar-menu">
+                <div class="menu-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                  </svg>
+                  대시보드
+                </div>
+                <div class="menu-item active">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                  </svg>
+                  상품 관리
+                </div>
+                <div class="menu-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                  </svg>
+                  예약 관리
+                </div>
+                <div class="menu-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                  픽업 위치
+                </div>
+                <div class="menu-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                  </svg>
+                  고객 관리
+                </div>
+              </div>
+              <div class="sidebar-footer">
+                <div class="admin-avatar">👤</div>
+                <div class="admin-info">
+                  <div class="admin-name">김관리</div>
+                  <div class="admin-role">슈퍼관리자</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="main-content">
+              <div class="top-header">
+                <div class="page-title">상품 관리</div>
+                <div class="header-actions">
+                  <div class="notification-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                      <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    <span class="notification-badge">3</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="content-area">
+                <div class="top-bar">
+                  <div style="display: flex; gap: 12px; align-items: center;">
+                    <div class="search-box">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                      </svg>
+                      <input type="text" placeholder="상품명 검색...">
+                    </div>
+                    <div class="filter-tabs">
+                      <span class="filter-tab active">전체</span>
+                      <span class="filter-tab">상의</span>
+                      <span class="filter-tab">하의</span>
+                      <span class="filter-tab">아우터</span>
+                      <span class="filter-tab">세트</span>
+                    </div>
+                  </div>
+                  <button class="primary-btn">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <line x1="12" y1="5" x2="12" y2="19"></line>
+                      <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    상품 등록
+                  </button>
+                </div>
+
+                <div class="card">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>상품</th>
+                        <th>카테고리</th>
+                        <th>1일 가격</th>
+                        <th>사이즈</th>
+                        <th>상태</th>
+                        <th>현재</th>
+                        <th>액션</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>
+                          <div class="product-cell">
+                            <div class="product-thumb">🖤</div>
+                            <span class="product-name">클래식 블랙 블레이저</span>
+                          </div>
+                        </td>
+                        <td>상의</td>
+                        <td><strong>15,000원</strong></td>
+                        <td>S, M, L</td>
+                        <td><span class="status-badge available">활성</span></td>
+                        <td><span class="status-badge renting">대여중</span></td>
+                        <td>
+                          <div class="action-btns">
+                            <div class="action-btn">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                              </svg>
+                            </div>
+                            <div class="action-btn">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                              </svg>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <div class="product-cell">
+                            <div class="product-thumb">❤️</div>
+                            <span class="product-name">버건디 실크 블라우스</span>
+                          </div>
+                        </td>
+                        <td>상의</td>
+                        <td><strong>12,000원</strong></td>
+                        <td>S, M</td>
+                        <td><span class="status-badge available">활성</span></td>
+                        <td><span class="status-badge available">대여가능</span></td>
+                        <td>
+                          <div class="action-btns">
+                            <div class="action-btn">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                              </svg>
+                            </div>
+                            <div class="action-btn">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                              </svg>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <div class="product-cell">
+                            <div class="product-thumb">💙</div>
+                            <span class="product-name">네이비 울 코트</span>
+                          </div>
+                        </td>
+                        <td>아우터</td>
+                        <td><strong>25,000원</strong></td>
+                        <td>M, L, XL</td>
+                        <td><span class="status-badge available">활성</span></td>
+                        <td><span class="status-badge reserved">예약됨</span></td>
+                        <td>
+                          <div class="action-btns">
+                            <div class="action-btn">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                              </svg>
+                            </div>
+                            <div class="action-btn">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                              </svg>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <div class="product-cell">
+                            <div class="product-thumb">👖</div>
+                            <span class="product-name">슬림핏 블랙 슬랙스</span>
+                          </div>
+                        </td>
+                        <td>하의</td>
+                        <td><strong>12,000원</strong></td>
+                        <td>S, M, L</td>
+                        <td><span class="status-badge available">활성</span></td>
+                        <td><span class="status-badge available">대여가능</span></td>
+                        <td>
+                          <div class="action-btns">
+                            <div class="action-btn">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                              </svg>
+                            </div>
+                            <div class="action-btn">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                              </svg>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 예약 관리 -->
+  <div class="section">
+    <div class="section-title">04. 예약 관리</div>
+    <div class="screens-row">
+      <!-- 예약 목록 -->
+      <div class="screen-wrapper">
+        <div class="screen-label">예약 목록</div>
+        <div class="admin-frame">
+          <div class="browser-chrome">
+            <div class="browser-dot red"></div>
+            <div class="browser-dot yellow"></div>
+            <div class="browser-dot green"></div>
+            <div class="browser-url">🔒 admin.rewears.kr/reservations</div>
+          </div>
+          <div class="admin-layout">
+            <div class="sidebar">
+              <div class="sidebar-logo">
+                <span>🎩</span>
+                <div>
+                  <span>리웨어스</span>
+                  <small>ADMIN</small>
+                </div>
+              </div>
+              <div class="sidebar-menu">
+                <div class="menu-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                  </svg>
+                  대시보드
+                </div>
+                <div class="menu-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                  </svg>
+                  상품 관리
+                </div>
+                <div class="menu-item active">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                  </svg>
+                  예약 관리
+                </div>
+                <div class="menu-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                  픽업 위치
+                </div>
+                <div class="menu-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                  </svg>
+                  고객 관리
+                </div>
+              </div>
+              <div class="sidebar-footer">
+                <div class="admin-avatar">👤</div>
+                <div class="admin-info">
+                  <div class="admin-name">김관리</div>
+                  <div class="admin-role">슈퍼관리자</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="main-content">
+              <div class="top-header">
+                <div class="page-title">예약 관리</div>
+                <div class="header-actions">
+                  <div class="notification-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                      <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    <span class="notification-badge">3</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="content-area">
+                <div class="top-bar">
+                  <div class="filter-tabs">
+                    <span class="filter-tab active">전체 (24)</span>
+                    <span class="filter-tab">입금대기 (3)</span>
+                    <span class="filter-tab">예약대기 (5)</span>
+                    <span class="filter-tab">예약확정 (8)</span>
+                    <span class="filter-tab">대여중 (6)</span>
+                    <span class="filter-tab">완료</span>
+                  </div>
+                  <button class="primary-btn" style="background: var(--black);">
+                    📋 엑셀 다운로드
+                  </button>
+                </div>
+
+                <div class="card">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>예약번호</th>
+                        <th>고객명</th>
+                        <th>상품</th>
+                        <th>대여기간</th>
+                        <th>픽업장소</th>
+                        <th>금액</th>
+                        <th>상태</th>
+                        <th>액션</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><strong style="color: var(--burgundy);">RW-1201-001</strong></td>
+                        <td>홍길동</td>
+                        <td>
+                          <div class="product-cell">
+                            <div class="product-thumb">🖤</div>
+                            <span>클래식 블랙 블레이저</span>
+                          </div>
+                        </td>
+                        <td>12.15 ~ 12.17 (3일)</td>
+                        <td>대전역 1번 출구</td>
+                        <td><strong>40,000원</strong></td>
+                        <td><span class="status-badge pending">입금대기</span></td>
+                        <td>
+                          <div class="action-btns">
+                            <div class="action-btn" style="background: var(--success-light);">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="#388E3C" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                              </svg>
+                            </div>
+                            <div class="action-btn">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                              </svg>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><strong style="color: var(--burgundy);">RW-1201-002</strong></td>
+                        <td>김민지</td>
+                        <td>
+                          <div class="product-cell">
+                            <div class="product-thumb">💙</div>
+                            <span>네이비 울 코트</span>
+                          </div>
+                        </td>
+                        <td>12.20 ~ 12.22 (3일)</td>
+                        <td>대전역 1번 출구</td>
+                        <td><strong>70,000원</strong></td>
+                        <td><span class="status-badge confirmed">예약확정</span></td>
+                        <td>
+                          <div class="action-btns">
+                            <div class="action-btn">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                              </svg>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><strong style="color: var(--burgundy);">RW-1130-005</strong></td>
+                        <td>이수진</td>
+                        <td>
+                          <div class="product-cell">
+                            <div class="product-thumb">❤️</div>
+                            <span>버건디 실크 블라우스</span>
+                          </div>
+                        </td>
+                        <td>11.28 ~ 12.01 (4일)</td>
+                        <td>대전역 1번 출구</td>
+                        <td><strong>44,000원</strong></td>
+                        <td><span class="status-badge renting">대여중</span></td>
+                        <td>
+                          <div class="action-btns">
+                            <div class="action-btn" style="background: var(--info-light);">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="#1976D2" stroke-width="2">
+                                <polyline points="9 11 12 14 22 4"></polyline>
+                                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                              </svg>
+                            </div>
+                            <div class="action-btn">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                              </svg>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><strong style="color: var(--burgundy);">RW-1128-003</strong></td>
+                        <td>박영호</td>
+                        <td>
+                          <div class="product-cell">
+                            <div class="product-thumb">👔</div>
+                            <span>화이트 드레스 셔츠</span>
+                          </div>
+                        </td>
+                        <td>11.25 ~ 11.27 (3일)</td>
+                        <td>대전역 1번 출구</td>
+                        <td><strong>27,000원</strong></td>
+                        <td><span class="status-badge completed">반납완료</span></td>
+                        <td>
+                          <div class="action-btns">
+                            <div class="action-btn">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                              </svg>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 예약 상세 -->
+      <div class="screen-wrapper">
+        <div class="screen-label">예약 상세</div>
+        <div class="admin-frame">
+          <div class="browser-chrome">
+            <div class="browser-dot red"></div>
+            <div class="browser-dot yellow"></div>
+            <div class="browser-dot green"></div>
+            <div class="browser-url">🔒 admin.rewears.kr/reservations/RW-1201-001</div>
+          </div>
+          <div class="admin-layout">
+            <div class="sidebar">
+              <div class="sidebar-logo">
+                <span>🎩</span>
+                <div>
+                  <span>리웨어스</span>
+                  <small>ADMIN</small>
+                </div>
+              </div>
+              <div class="sidebar-menu">
+                <div class="menu-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                  </svg>
+                  대시보드
+                </div>
+                <div class="menu-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                  </svg>
+                  상품 관리
+                </div>
+                <div class="menu-item active">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                  </svg>
+                  예약 관리
+                </div>
+                <div class="menu-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                  픽업 위치
+                </div>
+                <div class="menu-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                  </svg>
+                  고객 관리
+                </div>
+              </div>
+              <div class="sidebar-footer">
+                <div class="admin-avatar">👤</div>
+                <div class="admin-info">
+                  <div class="admin-name">김관리</div>
+                  <div class="admin-role">슈퍼관리자</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="main-content">
+              <div class="top-header">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="cursor: pointer;">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12,19 5,12 12,5"></polyline>
+                  </svg>
+                  <div class="page-title">예약 상세</div>
+                  <span class="status-badge pending" style="font-size: 10px;">입금대기</span>
+                </div>
+              </div>
+
+              <div class="content-area">
+                <!-- Progress Steps -->
+                <div class="progress-steps">
+                  <div class="progress-step">
+                    <div class="progress-dot current">1</div>
+                    <span class="progress-label active">입금대기</span>
+                  </div>
+                  <div class="progress-line"></div>
+                  <div class="progress-step">
+                    <div class="progress-dot">2</div>
+                    <span class="progress-label">예약대기</span>
+                  </div>
+                  <div class="progress-line"></div>
+                  <div class="progress-step">
+                    <div class="progress-dot">3</div>
+                    <span class="progress-label">예약확정</span>
+                  </div>
+                  <div class="progress-line"></div>
+                  <div class="progress-step">
+                    <div class="progress-dot">4</div>
+                    <span class="progress-label">픽업완료</span>
+                  </div>
+                  <div class="progress-line"></div>
+                  <div class="progress-step">
+                    <div class="progress-dot">5</div>
+                    <span class="progress-label">대여중</span>
+                  </div>
+                  <div class="progress-line"></div>
+                  <div class="progress-step">
+                    <div class="progress-dot">6</div>
+                    <span class="progress-label">반납완료</span>
+                  </div>
+                </div>
+
+                <div class="detail-grid">
+                  <!-- 예약 정보 -->
+                  <div class="card">
+                    <div class="card-header">
+                      <span class="card-title">📋 예약 정보</span>
+                    </div>
+                    <div class="card-body">
+                      <div class="info-section">
+                        <div class="info-row">
+                          <span class="info-label">예약번호</span>
+                          <span class="info-value" style="color: var(--burgundy); font-weight: 700;">RW-1201-001</span>
+                        </div>
+                        <div class="info-row">
+                          <span class="info-label">예약일시</span>
+                          <span class="info-value">2025.12.01 14:32</span>
+                        </div>
+                        <div class="info-row">
+                          <span class="info-label">대여기간</span>
+                          <span class="info-value">12.15 (월) ~ 12.17 (수) <strong>(3일)</strong></span>
+                        </div>
+                      </div>
+
+                      <div class="info-section">
+                        <div class="info-section-title">📍 픽업/반납</div>
+                        <div class="info-row">
+                          <span class="info-label">픽업장소</span>
+                          <span class="info-value">대전역 1번 출구</span>
+                        </div>
+                        <div class="info-row">
+                          <span class="info-label">픽업시간</span>
+                          <span class="info-value">12.15 오후 2:00</span>
+                        </div>
+                        <div class="info-row">
+                          <span class="info-label">반납시간</span>
+                          <span class="info-value">12.17 오후 6:00</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- 고객/상품 정보 -->
+                  <div class="card">
+                    <div class="card-header">
+                      <span class="card-title">👤 고객 정보</span>
+                    </div>
+                    <div class="card-body">
+                      <div class="info-section">
+                        <div class="info-row">
+                          <span class="info-label">이름</span>
+                          <span class="info-value">홍길동</span>
+                        </div>
+                        <div class="info-row">
+                          <span class="info-label">연락처</span>
+                          <span class="info-value">010-****-5678</span>
+                        </div>
+                        <div class="info-row">
+                          <span class="info-label">사이즈</span>
+                          <span class="info-value">M</span>
+                        </div>
+                      </div>
+
+                      <div class="info-section">
+                        <div class="info-section-title">👔 상품 정보</div>
+                        <div style="display: flex; gap: 12px; align-items: center; padding: 10px; background: var(--gray-50); border-radius: 8px;">
+                          <div style="width: 50px; height: 50px; background: var(--gray-200); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 24px;">🖤</div>
+                          <div>
+                            <div style="font-size: 12px; font-weight: 600;">클래식 블랙 블레이저</div>
+                            <div style="font-size: 10px; color: var(--gray-600);">사이즈: M</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 결제 정보 & 액션 -->
+                <div class="card" style="margin-top: 16px;">
+                  <div class="card-header">
+                    <span class="card-title">💰 결제 정보</span>
+                  </div>
+                  <div class="card-body">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                      <div>
+                        <div style="font-size: 11px; color: var(--gray-600); margin-bottom: 4px;">대여료 (3일)</div>
+                        <div style="font-size: 20px; font-weight: 700; color: var(--burgundy);">40,000원</div>
+                      </div>
+                      <div style="text-align: right;">
+                        <div style="font-size: 10px; color: var(--gray-500);">입금 계좌</div>
+                        <div style="font-size: 12px; font-weight: 600;">카카오뱅크 3333-12-3456789</div>
+                        <div style="font-size: 10px; color: var(--warning);">⏳ 입금 확인 대기 중</div>
+                      </div>
+                    </div>
+                    <div class="action-row">
+                      <button class="btn btn-success">✅ 입금 확인</button>
+                      <button class="btn btn-outline">📞 고객 연락</button>
+                      <button class="btn btn-danger">❌ 예약 취소</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 고객 관리 -->
+  <div class="section">
+    <div class="section-title">05. 고객 관리</div>
+    <div class="screens-row">
+      <div class="screen-wrapper">
+        <div class="screen-label">고객 목록</div>
+        <div class="admin-frame">
+          <div class="browser-chrome">
+            <div class="browser-dot red"></div>
+            <div class="browser-dot yellow"></div>
+            <div class="browser-dot green"></div>
+            <div class="browser-url">🔒 admin.rewears.kr/customers</div>
+          </div>
+          <div class="admin-layout">
+            <div class="sidebar">
+              <div class="sidebar-logo">
+                <span>🎩</span>
+                <div>
+                  <span>리웨어스</span>
+                  <small>ADMIN</small>
+                </div>
+              </div>
+              <div class="sidebar-menu">
+                <div class="menu-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                  </svg>
+                  대시보드
+                </div>
+                <div class="menu-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                  </svg>
+                  상품 관리
+                </div>
+                <div class="menu-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                  </svg>
+                  예약 관리
+                </div>
+                <div class="menu-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                  픽업 위치
+                </div>
+                <div class="menu-item active">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                  </svg>
+                  고객 관리
+                </div>
+              </div>
+              <div class="sidebar-footer">
+                <div class="admin-avatar">👤</div>
+                <div class="admin-info">
+                  <div class="admin-name">김관리</div>
+                  <div class="admin-role">슈퍼관리자</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="main-content">
+              <div class="top-header">
+                <div class="page-title">고객 관리</div>
+              </div>
+
+              <div class="content-area">
+                <div class="top-bar">
+                  <div class="search-box" style="width: 280px;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2">
+                      <circle cx="11" cy="11" r="8"></circle>
+                      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" placeholder="이름, 연락처 검색...">
+                  </div>
+                  <div style="font-size: 11px; color: var(--gray-600);">총 <strong>156</strong>명의 고객</div>
+                </div>
+
+                <div class="card">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>고객</th>
+                        <th>연락처</th>
+                        <th>사이즈</th>
+                        <th>가입일</th>
+                        <th>총 예약</th>
+                        <th>총 이용금액</th>
+                        <th>최근 이용</th>
+                        <th>액션</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>
+                          <div class="product-cell">
+                            <div class="product-thumb" style="background: var(--burgundy-light); color: white; font-size: 11px;">홍</div>
+                            <span class="product-name">홍길동</span>
+                          </div>
+                        </td>
+                        <td>010-****-5678</td>
+                        <td>M</td>
+                        <td>2025.10.15</td>
+                        <td><strong>5건</strong></td>
+                        <td style="color: var(--burgundy); font-weight: 600;">185,000원</td>
+                        <td>2025.12.01</td>
+                        <td>
+                          <div class="action-btns">
+                            <div class="action-btn">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                              </svg>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <div class="product-cell">
+                            <div class="product-thumb" style="background: var(--info); color: white; font-size: 11px;">김</div>
+                            <span class="product-name">김민지</span>
+                          </div>
+                        </td>
+                        <td>010-****-1234</td>
+                        <td>S</td>
+                        <td>2025.11.01</td>
+                        <td><strong>3건</strong></td>
+                        <td style="color: var(--burgundy); font-weight: 600;">120,000원</td>
+                        <td>2025.11.28</td>
+                        <td>
+                          <div class="action-btns">
+                            <div class="action-btn">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                              </svg>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <div class="product-cell">
+                            <div class="product-thumb" style="background: var(--success); color: white; font-size: 11px;">이</div>
+                            <span class="product-name">이수진</span>
+                          </div>
+                        </td>
+                        <td>010-****-9012</td>
+                        <td>M</td>
+                        <td>2025.11.10</td>
+                        <td><strong>2건</strong></td>
+                        <td style="color: var(--burgundy); font-weight: 600;">88,000원</td>
+                        <td>2025.11.30</td>
+                        <td>
+                          <div class="action-btns">
+                            <div class="action-btn">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                              </svg>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <div class="product-cell">
+                            <div class="product-thumb" style="background: var(--warning); color: white; font-size: 11px;">박</div>
+                            <span class="product-name">박영호</span>
+                          </div>
+                        </td>
+                        <td>010-****-3456</td>
+                        <td>L</td>
+                        <td>2025.09.20</td>
+                        <td><strong>8건</strong></td>
+                        <td style="color: var(--burgundy); font-weight: 600;">320,000원</td>
+                        <td>2025.11.27</td>
+                        <td>
+                          <div class="action-btns">
+                            <div class="action-btn">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                              </svg>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>리웨어스 관리자 UI 프리뷰 • 2025.12.01</p>
+    <p style="margin-top: 8px;">블랙/화이트 기반 + 버건디(#800020) 포인트 컬러</p>
+  </footer>
+</body>
+</html>
